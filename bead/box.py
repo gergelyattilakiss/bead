@@ -20,6 +20,7 @@ import os
 from typing import Iterator, Iterable, Sequence
 
 from .archive import Archive, InvalidArchive
+from .exceptions import BoxError
 from . import spec as bead_spec
 from .tech.timestamp import time_from_timestamp
 from .import tech
@@ -164,6 +165,10 @@ class Box:
 
     def store(self, workspace, freeze_time):
         # -> Bead
+        if not os.path.exists(self.directory):
+            raise BoxError(f'Box "{self.name}": directory {self.directory} does not exists')
+        if not os.path.isdir(self.directory):
+            raise BoxError(f'Box "{self.name}": {self.directory} is not a directory')
         zipfilename = (
             self.directory / f'{workspace.name}_{freeze_time}.zip')
         workspace.pack(zipfilename, freeze_time=freeze_time, comment=ARCHIVE_COMMENT)

@@ -5,6 +5,7 @@ import sys
 from bead import tech
 from bead.workspace import Workspace
 from bead import layouts
+from bead.exceptions import BoxError
 import bead.spec as bead_spec
 
 from .cmdparse import Command
@@ -107,7 +108,10 @@ class CmdSave(Command):
             box = env.get_box(box_name)
             if box is None:
                 die(f'Unknown box: {box_name}')
-        location = box.store(workspace, timestamp())
+        try:
+            location = box.store(workspace, timestamp())
+        except BoxError as e:
+            die(f'Error saving: {e}')
         print(f'Successfully stored bead at {location}.')
 
 
