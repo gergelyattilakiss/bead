@@ -166,7 +166,7 @@ class Box:
     def store(self, workspace, freeze_time):
         # -> Bead
         if not os.path.exists(self.directory):
-            raise BoxError(f'Box "{self.name}": directory {self.directory} does not exists')
+            raise BoxError(f'Box "{self.name}": directory {self.directory} does not exist')
         if not os.path.isdir(self.directory):
             raise BoxError(f'Box "{self.name}": {self.directory} is not a directory')
         zipfilename = (

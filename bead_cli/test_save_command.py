@@ -98,3 +98,10 @@ class Test_more_than_one_boxes(TestCase):
             SystemExit,
             robot.cli, 'save', 'unknown-box', '--workspace', 'bead')
         assert 'ERROR' in robot.stderr
+
+    def test_save_to_box_without_backing_directory(self, robot, box1, box2):
+        robot.cli('new', 'bead')
+        os.rmdir(box2.directory)
+        self.assertRaises(SystemExit, robot.cli, 'save', box2.name, '-w', 'bead')
+        assert 'ERROR' in robot.stderr
+        assert 'does not exist' in robot.stderr
