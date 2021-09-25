@@ -1,6 +1,5 @@
 from bead.exceptions import InvalidArchive
 import os
-import sys
 
 from bead import tech
 from bead.workspace import Workspace
