@@ -9,7 +9,7 @@ from bead.exceptions import BoxError
 import bead.spec as bead_spec
 
 from .cmdparse import Command
-from .common import assert_valid_workspace, die, warning
+from .common import assert_valid_workspace, die, warning, info
 from .common import DefaultArgSentinel
 from .common import OPTIONAL_WORKSPACE, OPTIONAL_ENV
 from .common import BEAD_REF_BASE, BEAD_TIME, resolve_bead
@@ -91,8 +91,7 @@ class CmdSave(Command):
             if not boxes:
                 warning('No boxes have been defined')
                 beadbox = os.path.expanduser('~/BeadBox')
-                sys.stderr.write(
-                    f'Creating and using a new one with name `home` and location {beadbox}')
+                info(f'Creating and using a new one with name `home` and location {beadbox}')
                 tech.fs.ensure_directory(beadbox)
                 env.add_box('home', beadbox)
                 env.save()

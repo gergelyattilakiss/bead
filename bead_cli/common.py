@@ -31,6 +31,11 @@ def warning(msg):
     sys.stderr.write('\n')
 
 
+def info(msg):
+    sys.stderr.write(msg)
+    sys.stderr.write('\n')
+
+
 def OPTIONAL_WORKSPACE(parser):
     '''
     Define `workspace` as option, defaulting to current directory
