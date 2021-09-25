@@ -219,3 +219,10 @@ class Test_input_commands(TestCase, fixtures.RobotAndBeads):
         robot.cli('input', 'unload', 'input_a')
         assert not os.path.exists(robot.cwd / 'input/input_a')
         assert not os.path.exists(robot.cwd / 'input/input_b')
+
+    def test_delete_nonexisting_input(self, robot, bead_a):
+        robot.cli('develop', bead_a)
+        robot.cd(bead_a)
+        self.assertRaises(SystemExit, robot.cli, 'input', 'delete', 'nonexisting')
+        assert 'ERROR' in robot.stderr
+        assert 'does not exist' in robot.stderr

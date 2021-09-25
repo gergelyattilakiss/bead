@@ -116,8 +116,11 @@ class CmdDelete(Command):
     def run(self, args):
         input_nick = args.input_nick
         workspace = get_workspace(args)
-        workspace.delete_input(input_nick)
-        print(f'Input {input_nick} is deleted.')
+        if workspace.has_input(input_nick):
+            workspace.delete_input(input_nick)
+            print(f'Input {input_nick} is deleted.')
+        else:
+            die(f'Input {input_nick} does not exist')
 
 
 class CmdUpdate(Command):
