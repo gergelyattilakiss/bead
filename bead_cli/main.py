@@ -1,5 +1,7 @@
 import os
+import subprocess
 import sys
+import textwrap
 import traceback
 
 import appdirs
@@ -12,22 +14,53 @@ from . import workspace
 from . import input
 from . import box
 from .web import commands as web
-from . import git_info
 
 
-VERSION_INFO = f'''
-Python:
-------
-{sys.version}
+def output_of(shell_cmd):
+    return subprocess.check_output(shell_cmd, shell=True).decode('utf-8').strip()
 
-Bead source:
------------
-origin:  {git_info.GIT_REPO}
-branch:  {git_info.GIT_BRANCH}
-date:    {git_info.GIT_DATE}
-hash:    {git_info.GIT_HASH}
-version: {git_info.TAG_VERSION}{'-dirty' if git_info.DIRTY else ''}
-'''
+
+class _git:
+    def __init__(self):
+        try:
+            from . import git_info
+        except ImportError:
+            self.repo = output_of('git config --get remote.origin.url')
+            self.branch = output_of('git branch --show-current')
+            self.date = output_of("git show HEAD --pretty=tformat:'%cI' --no-patch")
+            self.commit = output_of("git show HEAD --pretty=tformat:'%H' --no-patch")
+            self.tag = output_of('git describe --tags')
+            modified_files = [
+                line for line in output_of('git status --porcelain=1').splitlines()
+                if not line.startswith('??') and ' bead_cli/git_info.py' not in line]
+            print(modified_files)
+            self.dirty = bool(modified_files)
+        else:
+            self.repo = git_info.GIT_REPO
+            self.branch = git_info.GIT_BRANCH
+            self.date = git_info.GIT_DATE
+            self.commit = git_info.GIT_HASH
+            self.tag = git_info.TAG_VERSION
+            self.dirty = git_info.DIRTY
+
+        self.version_info = textwrap.dedent(
+            '''
+            Python:
+            ------
+            {sys.version}
+
+            Bead source:
+            -----------
+            origin:  {self.repo}
+            branch:  {self.branch}
+            date:    {self.date}
+            hash:    {self.commit}
+            version: {self.tag}{version_suffix}
+            '''
+        ).format(self=self, sys=sys, version_suffix='-dirty' if self.dirty else '')
+
+
+git = _git()
 
 
 class CmdVersion(Command):
@@ -36,7 +69,7 @@ class CmdVersion(Command):
     '''
 
     def run(self, args):
-        print(VERSION_INFO)
+        print(git.version_info)
 
 
 def make_argument_parser(defaults):
@@ -90,6 +123,10 @@ def make_argument_parser(defaults):
             'delete',
             input.CmdDelete,
             'Forget all about an input.',
+
+            'rm',
+            input.CmdDelete,
+            'Forget all about an input. (alias for delete)',
 
             'map',
             input.CmdMap,
@@ -150,7 +187,7 @@ for your convenience, thus it is not really helpful in fixing the bug.
 
 
 def main(run=run):
-    if git_info.DIRTY:
+    if git.dirty:
         warning('test build, DO NOT USE for production!!!')
     config_dir = appdirs.user_config_dir(
         'bead_cli-6a4d9d98-8e64-4a2a-b6c2-8a753ea61daf')
@@ -170,8 +207,8 @@ def main(run=run):
         with open(error_report, 'w') as f:
             f.write(f'sys_argv = {sys_argv}\n')
             f.write(f'{exception}\n')
-            f.write(f'{VERSION_INFO}\n')
-            if git_info.DIRTY:
+            f.write(f'{git.version_info}\n')
+            if git.dirty:
                 f.write('WARNING: TEST BUILD, UNKNOWN, UNCOMMITTED CHANGES !!!\n')
         print(
             FAILURE_TEMPLATE.format(

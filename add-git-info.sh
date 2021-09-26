@@ -5,7 +5,7 @@
 # GIT_HASH   = "ff43a47"
 # DIRTY      = True | False
 
-if git status --short |
+if git status --porcelain=1 |
        # drop untracked
        grep -v '^[?][?]' |
        # ignore changes in version file
@@ -23,7 +23,7 @@ cat > bead_cli/git_info.py <<EOF
 GIT_REPO    = "$(git config --get remote.origin.url)"
 GIT_BRANCH  = "$(git branch --show-current)"
 GIT_DATE    = "$(git show HEAD --pretty=tformat:'%cI' --no-patch)"
-GIT_HASH    = "$(git show HEAD --pretty=tformat:'%h' --no-patch)"
+GIT_HASH    = "$(git show HEAD --pretty=tformat:'%H' --no-patch)"
 TAG_VERSION = "$(git describe --tags)"
 DIRTY       = $DIRTY
 EOF
