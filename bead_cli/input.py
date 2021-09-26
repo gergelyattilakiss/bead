@@ -143,8 +143,10 @@ class CmdUpdate(Command):
             self.update_one_input(args)
 
     def update_all_inputs(self, args):
-        assert args.bead_ref_base is SAME_BEAD_NEWEST_VERSION
-        assert not args.bead_offset, "--next, --prev can not be specified when updating all inputs"
+        if args.bead_ref_base is not SAME_BEAD_NEWEST_VERSION:
+            die('Too many arguments')
+        if args.bead_offset:
+            die("--next, --prev can not be specified when updating all inputs")
         workspace = get_workspace(args)
         env = args.get_env()
         unionbox = UnionBox(env.get_boxes())
@@ -189,7 +191,8 @@ class CmdUpdate(Command):
 
             if args.bead_offset:
                 # handle --prev --next
-                assert args.bead_time == TIME_LATEST
+                if args.bead_time is not TIME_LATEST:
+                    die('You can give either --prev/--next or --time, not both')
                 context = get_context(input.freeze_time)
                 if args.bead_offset == 1:
                     bead = context.next
@@ -200,7 +203,8 @@ class CmdUpdate(Command):
                 bead = get_context(args.bead_time).best
         else:
             # path or new bead by name - same as input add, develop
-            assert args.bead_offset == 0
+            if args.bead_offset:
+                die('--prev/--next is not supported when an input is replaced with another bead')
             bead = resolve_bead(env, bead_ref_base, args.bead_time)
         if bead:
             _update_input(workspace, input, bead)
