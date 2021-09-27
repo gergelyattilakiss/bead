@@ -178,29 +178,25 @@ class CmdUpdate(Command):
             die(f'Workspace does not have input "{input_nick}"'
                 ' - did you want to add it as a new one?')
         if bead_ref_base is SAME_BEAD_NEWEST_VERSION:
-            def get_context(time):
-                unionbox = UnionBox(env.get_boxes())
-                bead_name = workspace.get_input_bead_name(input.name)
-                try:
-                    return unionbox.get_context(
-                        check_type=bead_spec.BEAD_NAME,
-                        check_param=bead_name,
-                        time=time)
-                except LookupError:
-                    die(f'Could not find bead for "{input.name}" with name "{bead_name}"')
+            bead_name = workspace.get_input_bead_name(input.name)
 
-            if args.bead_offset:
-                # handle --prev --next
-                if args.bead_time is not TIME_LATEST:
-                    die('You can give either --prev/--next or --time, not both')
-                context = get_context(input.freeze_time)
-                if args.bead_offset == 1:
-                    bead = context.next
+            if args.bead_offset and args.bead_time is not TIME_LATEST:
+                die('You can give either --prev/--next or --time, not both')
+
+            boxes = env.get_boxes()
+            try:
+                if args.bead_offset:
+                    # handle --prev --next
+                    context = _get_context(boxes, bead_name, input.freeze_time)
+                    if args.bead_offset == 1:
+                        bead = context.next
+                    else:
+                        bead = context.prev
                 else:
-                    bead = context.prev
-            else:
-                # --time
-                bead = get_context(args.bead_time).best
+                    # --time
+                    bead = _get_context(boxes, bead_name, args.bead_time).best
+            except LookupError:
+                die(f'Could not find bead for "{input.name}" with name "{bead_name}"')
         else:
             # path or new bead by name - same as input add, develop
             if args.bead_offset:
@@ -210,6 +206,14 @@ class CmdUpdate(Command):
             _update_input(workspace, input, bead)
         else:
             die('Can not find matching bead')
+
+
+def _get_context(boxes, bead_name, time):
+    unionbox = UnionBox(boxes)
+    return unionbox.get_context(
+        check_type=bead_spec.BEAD_NAME,
+        check_param=bead_name,
+        time=time)
 
 
 def _update_input(workspace, input, bead):
