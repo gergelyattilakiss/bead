@@ -92,11 +92,6 @@ def make_argument_parser(defaults):
             workspace.CmdStatus,
             'Show workspace information.',
 
-            # TODO: remove nuke command after next release
-            'nuke',
-            workspace.CmdNuke,
-            'No operation, you probably want zap, to delete the workspace.',
-
             'web',
             web.CmdWeb,
             'Manage/visualize the big picture - connections between beads.',

@@ -86,10 +86,9 @@ Thank you for your interest!
 
 ## TODOs
 
-Updated by script ([./ci](https://github.com/e3krisztian/bead/blob/master/ci)), text in this section and afterwards will be overwritten
+Updated by script ([./ci](https://github.com/e3krisztian/bead/blob/wip/ci)), text in this section and afterwards will be overwritten
 
-- [FIXME: this test helper uses private to box implementation information](https://github.com/e3krisztian/bead/blob/master/bead_cli/test_feature_update_by_name.py#L108)
-- [TODO: log/report problem](https://github.com/e3krisztian/bead/blob/master/bead/box.py#L160)
-- [TODO: remove nuke command after next release](https://github.com/e3krisztian/bead/blob/master/bead_cli/main.py#L62)
-- [XXX: try to load smaller inputs?](https://github.com/e3krisztian/bead/blob/master/bead_cli/workspace.py#L161)
-- [XXX: (usability) save - support saving directly to a directory outside of workspace](https://github.com/e3krisztian/bead/blob/master/bead_cli/workspace.py#L87)
+- [FIXME: this test helper uses private to box implementation information](https://github.com/e3krisztian/bead/blob/wip/bead_cli/test_feature_update_by_name.py#L108)
+- [TODO: log/report problem](https://github.com/e3krisztian/bead/blob/wip/bead/box.py#L161)
+- [XXX: try to load smaller inputs?](https://github.com/e3krisztian/bead/blob/wip/bead_cli/workspace.py#L163)
+- [XXX: (usability) save - support saving directly to a directory outside of workspace](https://github.com/e3krisztian/bead/blob/wip/bead_cli/workspace.py#L87)

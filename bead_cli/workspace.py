@@ -241,30 +241,22 @@ class CmdStatus(Command):
 
 class CmdZap(Command):
     '''
-    Delete the workspace, inluding data, code and documentation.
+    Delete the current workspace directory - like rm -rf "$PWD", only more aggressive.
     '''
 
     def declare(self, arg):
         arg(WORKSPACE_defaulting_to(Workspace.for_current_working_directory()))
+        arg('-f', '--force', default=False, action='store_true',
+            help=('Do not check that the directory is a valid workspace.'
+                  ' Removes partially removed (damaged/invalid) workspaces,'
+                  ' and (DANGER ZONE!) non-workspace directories as well!'))
 
     def run(self, args):
         workspace = args.workspace
-        assert_valid_workspace(workspace)
+        if not args.force:
+            assert_valid_workspace(workspace)
         directory = workspace.directory
         # on non-posix systems (Windows) it might happen, that we can not remove
         # the directory we are in -> ignore errors
         tech.fs.rmtree(directory, ignore_errors=os.name != 'posix')
         print(f'Deleted workspace {directory}')
-
-
-class CmdNuke(Command):
-    '''
-    No operation, you probably want zap, to delete the workspace.
-
-    Nuke was a bad name.
-    '''
-
-    def run(self, args):
-        print('Nothing happened.')
-        print()
-        print('You probably want to use zap, the nuke command is about to disappear.')

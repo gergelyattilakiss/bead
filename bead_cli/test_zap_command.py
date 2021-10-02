@@ -1,3 +1,4 @@
+import os
 from bead.test import TestCase
 
 from . import test_fixtures as fixtures
@@ -23,3 +24,8 @@ class Test_zap(TestCase, fixtures.RobotAndBeads):
     def test_invalid_workspace(self, robot):
         self.assertRaises(SystemExit, robot.cli, 'zap')
         assert 'ERROR' in robot.stderr
+
+    def test_force_invalid_workspace(self, robot):
+        robot.cli('zap', '--force')
+        assert not os.path.exists(robot.cwd)
+        assert 'ERROR' not in robot.stderr
