@@ -33,8 +33,7 @@ class _git:
             modified_files = [
                 line for line in output_of('git status --porcelain=1').splitlines()
                 if not line.startswith('??') and ' bead_cli/git_info.py' not in line]
-            print(modified_files)
-            self.dirty = bool(modified_files)
+            self.dirty = modified_files != []
         else:
             self.repo = git_info.GIT_REPO
             self.branch = git_info.GIT_BRANCH
