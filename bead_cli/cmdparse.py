@@ -152,23 +152,13 @@ class Parser:
         command.declare(self.__class__(parser, self.defaults).arg)
         parser.set_defaults(_cmdparse__run=command.run)
 
-    def commands(self, *names_commands_and_title):
+    def commands(self, commands_sequence):
         '''
         Declare any number of commands in one step.
 
-        Takes a sequence of alternating names, commands and titles.
+        Takes a sequence of (name, command, title) tuples.
         '''
-        names    = names_commands_and_title[0::3]
-        commands = names_commands_and_title[1::3]
-        titles   = names_commands_and_title[2::3]
-
-        MISMATCH = 'Names, commands, and titles do not match up!'
-        assert len(names) == len(commands), MISMATCH
-        assert len(names) == len(titles), MISMATCH
-        assert all(isinstance(n, str) for n in names), MISMATCH
-        assert all(isinstance(t, str) for t in titles), MISMATCH
-
-        for name, command, title in zip(names, commands, titles):
+        for name, command, title in commands_sequence:
             self.command(name, command, title)
 
     def group(self, name, title='', help=None):

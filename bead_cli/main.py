@@ -74,88 +74,37 @@ class CmdVersion(Command):
 def make_argument_parser(defaults):
     parser = Parser.new(defaults)
     (parser
-        .commands(
-            'new',
-            workspace.CmdNew,
-            'Create and initialize new workspace directory with a new bead.',
-
-            'develop',
-            workspace.CmdDevelop,
-            'Create workspace from specified bead.',
-
-            'save',
-            workspace.CmdSave,
-            'Save workspace in a box.',
-
-            'status',
-            workspace.CmdStatus,
-            'Show workspace information.',
-
-            'web',
-            web.CmdWeb,
-            'Manage/visualize the big picture - connections between beads.',
-
-            'zap',
-            workspace.CmdZap,
-            'Delete workspace.',
-
-            'xmeta',
-            box.CmdXmeta,
-            'eXport eXtended meta attributes to a file next to zip archive.',
-
-            'version',
-            CmdVersion,
-            'Show program version.'))
+        .commands([
+            ('new', workspace.CmdNew, 'Create and initialize new workspace directory with a new bead.'),
+            ('develop', workspace.CmdDevelop, 'Create workspace from specified bead.'),
+            ('save', workspace.CmdSave, 'Save workspace in a box.'),
+            ('status', workspace.CmdStatus, 'Show workspace information.'),
+            ('web', web.CmdWeb, 'Manage/visualize the big picture - connections between beads.'),
+            ('zap', workspace.CmdZap, 'Delete workspace.'),
+            ('xmeta', box.CmdXmeta, 'eXport eXtended meta attributes to a file next to zip archive.'),
+            ('version', CmdVersion, 'Show program version.'),
+        ]))
 
     (parser
         .group('input', 'Manage data loaded from other beads')
-        .commands(
-            'add',
-            input.CmdAdd,
-            'Define dependency and load its data.',
-
-            'delete',
-            input.CmdDelete,
-            'Forget all about an input.',
-
-            'rm',
-            input.CmdDelete,
-            'Forget all about an input. (alias for delete)',
-
-            'map',
-            input.CmdMap,
-            'Change the name of the bead from which the input is loaded/updated.',
-
-            'update',
-            input.CmdUpdate,
-            'Update input[s] to newest version or defined bead.',
-
-            'load',
-            input.CmdLoad,
-            'Load data from already defined dependency.',
-
-            'unload',
-            input.CmdUnload,
-            'Unload input data.',))
+        .commands([
+            ('add', input.CmdAdd, 'Define dependency and load its data.'),
+            ('delete', input.CmdDelete, 'Forget all about an input.'),
+            ('rm', input.CmdDelete, 'Forget all about an input. (alias for delete)'),
+            ('map', input.CmdMap, 'Change the name of the bead from which the input is loaded/updated.'),
+            ('update', input.CmdUpdate, 'Update input[s] to newest version or defined bead.'),
+            ('load', input.CmdLoad, 'Load data from already defined dependency.'),
+            ('unload', input.CmdUnload, 'Unload input data.'),
+        ]))
 
     (parser
         .group('box', 'Manage bead boxes')
-        .commands(
-            'add',
-            box.CmdAdd,
-            'Define a box.',
-
-            'list',
-            box.CmdList,
-            'Show known boxes.',
-
-            'forget',
-            box.CmdForget,
-            'Forget a known box.',
-
-            'rewire',
-            box.CmdRewire,
-            'Remap inputs.'))
+        .commands([
+            ('add', box.CmdAdd, 'Define a box.'),
+            ('list', box.CmdList, 'Show known boxes.'),
+            ('forget', box.CmdForget, 'Forget a known box.'),
+            ('rewire', box.CmdRewire, 'Remap inputs.'),
+        ]))
 
     return parser
 
