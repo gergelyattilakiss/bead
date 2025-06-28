@@ -152,11 +152,11 @@ class Parser:
         command.declare(self.__class__(parser, self.defaults).arg)
         parser.set_defaults(_cmdparse__run=command.run)
 
-    def commands(self, commands_sequence):
+    def commands(self, *commands_sequence):
         '''
         Declare any number of commands in one step.
 
-        Takes a sequence of (name, command, title) tuples.
+        Takes any number of (name, command, title) tuples.
         '''
         for name, command, title in commands_sequence:
             self.command(name, command, title)

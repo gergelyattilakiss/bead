@@ -74,7 +74,7 @@ class CmdVersion(Command):
 def make_argument_parser(defaults):
     parser = Parser.new(defaults)
     (parser
-        .commands([
+        .commands(
             ('new', workspace.CmdNew, 'Create and initialize new workspace directory with a new bead.'),
             ('develop', workspace.CmdDevelop, 'Create workspace from specified bead.'),
             ('save', workspace.CmdSave, 'Save workspace in a box.'),
@@ -83,11 +83,11 @@ def make_argument_parser(defaults):
             ('zap', workspace.CmdZap, 'Delete workspace.'),
             ('xmeta', box.CmdXmeta, 'eXport eXtended meta attributes to a file next to zip archive.'),
             ('version', CmdVersion, 'Show program version.'),
-        ]))
+        ))
 
     (parser
         .group('input', 'Manage data loaded from other beads')
-        .commands([
+        .commands(
             ('add', input.CmdAdd, 'Define dependency and load its data.'),
             ('delete', input.CmdDelete, 'Forget all about an input.'),
             ('rm', input.CmdDelete, 'Forget all about an input. (alias for delete)'),
@@ -95,16 +95,16 @@ def make_argument_parser(defaults):
             ('update', input.CmdUpdate, 'Update input[s] to newest version or defined bead.'),
             ('load', input.CmdLoad, 'Load data from already defined dependency.'),
             ('unload', input.CmdUnload, 'Unload input data.'),
-        ]))
+        ))
 
     (parser
         .group('box', 'Manage bead boxes')
-        .commands([
+        .commands(
             ('add', box.CmdAdd, 'Define a box.'),
             ('list', box.CmdList, 'Show known boxes.'),
             ('forget', box.CmdForget, 'Forget a known box.'),
             ('rewire', box.CmdRewire, 'Remap inputs.'),
-        ]))
+        ))
 
     return parser
 
