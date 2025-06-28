@@ -4,6 +4,8 @@ import sys
 import textwrap
 import traceback
 
+from collections.abc import Sequence
+
 import appdirs
 from .cmdparse import Parser, Command
 
@@ -109,7 +111,7 @@ def make_argument_parser(defaults):
     return parser
 
 
-def run(config_dir, argv):
+def run(config_dir: str, argv: Sequence[str]):
     parser_defaults = dict(config_dir=Path(config_dir))
     parser = make_argument_parser(parser_defaults)
     return parser.dispatch(argv)

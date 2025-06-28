@@ -13,6 +13,8 @@ For single command scripts, be more minimalist and just use argparse directly.
 
 import argparse
 import pipes
+from collections.abc import Sequence
+from typing import Any
 
 
 __all__ = 'Command Parser'.split()
@@ -64,9 +66,9 @@ class Parser:
     parsers.
     '''
 
-    argparser = argparse.ArgumentParser
+    argparser: argparse.ArgumentParser
 
-    def __init__(self, argparser, defaults):
+    def __init__(self, argparser: argparse.ArgumentParser, defaults: dict) -> None:
         '''
         Wrap an `argparse.ArgumentParser`.
 
@@ -80,7 +82,7 @@ class Parser:
         self.__subparsers = None
 
     @classmethod
-    def new(cls, defaults, *args, **kwargs):
+    def new(cls, defaults: dict, *args: Any, **kwargs: Any) -> 'Parser':
         '''
         Create a new `Parser`.
 
@@ -97,7 +99,7 @@ class Parser:
             self.__subparsers = self.argparser.add_subparsers()
         return self.__subparsers
 
-    def _make_command(self, commandish):
+    def _make_command(self, commandish: Command | type) -> Command:
         '''
         Make a proper Command instance.
 
@@ -109,11 +111,8 @@ class Parser:
         if issubclass(commandish, Command):
             instance = commandish()
             return instance
-        if callable(commandish):
-            # enhancement: introspect parameter names, default values, annotations?
-            raise NotImplementedError('Can not work with vanilla callables')
 
-    def arg(self, *args, **kwargs):
+    def arg(self, *args: Any, **kwargs: Any) -> None:
         '''
         Declare one or more arguments.
 
@@ -134,7 +133,7 @@ class Parser:
                     f"{kwargs.get('help', '')} (default: {kwargs['default']!r})")
             self.argparser.add_argument(*args, **arg_kwargs)
 
-    def command(self, name, commandish, title):
+    def command(self, name: str, commandish: Command | type, title: str) -> None:
         '''
         Declare a command.
 
@@ -152,7 +151,7 @@ class Parser:
         command.declare(self.__class__(parser, self.defaults).arg)
         parser.set_defaults(_cmdparse__run=command.run)
 
-    def commands(self, *commands_sequence):
+    def commands(self, *commands_sequence: tuple[str, Command | type, str]) -> None:
         '''
         Declare any number of commands in one step.
 
@@ -161,7 +160,7 @@ class Parser:
         for name, command, title in commands_sequence:
             self.command(name, command, title)
 
-    def group(self, name, title='', help=None):
+    def group(self, name: str, title: str = '', help: str | None = None) -> 'Parser':
         '''
         Declare a command group.
 
@@ -171,7 +170,7 @@ class Parser:
             name, help=title + '...', description=help)
         return self.__class__(parser, self.defaults)
 
-    def dispatch(self, argv):
+    def dispatch(self, argv: Sequence[str]) -> int:
         '''
         Parse `argv` and dispatch to the appropriate command.
         '''
