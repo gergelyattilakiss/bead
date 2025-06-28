@@ -8,3 +8,4 @@ executables/
 .*_cache/
 *,cover
 .aider*
+bead.sublime-workspace
