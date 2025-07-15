@@ -30,6 +30,11 @@ dev = [
     "mypy",
 ]
 
+[tool.pyright]
+reportUnusedCallResult = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+
 [build-system]
 requires = ["flit_core"]
 build-backend = "flit_core.buildapi"
