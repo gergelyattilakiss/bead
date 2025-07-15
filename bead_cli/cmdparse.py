@@ -17,7 +17,7 @@ from collections.abc import Sequence
 from typing import Any
 
 
-__all__ = 'Command Parser'.split()
+__all__ = ['Command', 'Parser']
 
 
 class Command:

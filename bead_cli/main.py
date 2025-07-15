@@ -18,7 +18,7 @@ from . import box
 from .web import commands as web
 
 
-def output_of(shell_cmd):
+def output_of(shell_cmd: str):
     return subprocess.check_output(shell_cmd, shell=True).decode('utf-8').strip()
 
 
