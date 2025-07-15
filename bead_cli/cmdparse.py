@@ -12,7 +12,7 @@ For single command scripts, be more minimalist and just use argparse directly.
 
 
 import argparse
-import pipes
+import shlex
 from collections.abc import Sequence
 from typing import Any
 
@@ -177,7 +177,7 @@ class Parser:
         def print_help(args):
             print(
                 'ERROR: not a full command <%s>\n'
-                % ' '.join(pipes.quote(arg) for arg in argv))
+                % ' '.join(shlex.quote(arg) for arg in argv))
             self.argparser.print_help()
             return -1
 
