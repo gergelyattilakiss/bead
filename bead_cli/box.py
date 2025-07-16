@@ -27,7 +27,7 @@ class CmdAdd(Command):
         if not os.path.isdir(directory):
             print(f'ERROR: "{directory}" is not an existing directory!')
             return
-        location = os.path.abspath(directory)
+        location = os.path.realpath(directory)
         try:
             env.add_box(name, location)
             env.save()

@@ -151,7 +151,7 @@ def main(run=run):
         sys_argv = f'{sys.argv!r}'
         exception = traceback.format_exc()
         short_exception = traceback.format_exc(limit=1)
-        error_report = os.path.abspath(f'error_{timestamp()}.txt')
+        error_report = os.path.realpath(f'error_{timestamp()}.txt')
         with open(error_report, 'w') as f:
             f.write(f'sys_argv = {sys_argv}\n')
             f.write(f'{exception}\n')

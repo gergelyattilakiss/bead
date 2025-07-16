@@ -25,7 +25,7 @@ class Workspace(Bead):
     directory = None
 
     def __init__(self, directory):
-        self.directory = fs.Path(os.path.abspath(directory))
+        self.directory = fs.Path(os.path.realpath(directory))
 
     @property
     def is_valid(self):
