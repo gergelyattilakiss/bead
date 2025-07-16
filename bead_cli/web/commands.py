@@ -300,7 +300,7 @@ def load_all_beads(boxes):
     for n, bead in enumerate(UnionBox(boxes).all_beads()):
         load_end = time.perf_counter()
 
-        msg = f"\rLoaded bead {n+1} ({bead.archive_filename})"[:columns]
+        msg = f"\rLoaded bead {n + 1} ({bead.archive_filename})"[:columns]
         msg = msg + ' ' * (columns - len(msg))
         print(msg, end="", flush=True)
         if load_end - load_start > 1:

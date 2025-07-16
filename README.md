@@ -90,5 +90,5 @@ Updated by script ([./ci](https://github.com/e3krisztian/bead/blob/wip/ci)), tex
 
 - [FIXME: this test helper uses private to box implementation information](https://github.com/e3krisztian/bead/blob/wip/bead_cli/test_feature_update_by_name.py#L108)
 - [TODO: log/report problem](https://github.com/e3krisztian/bead/blob/wip/bead/box.py#L161)
-- [XXX: try to load smaller inputs?](https://github.com/e3krisztian/bead/blob/wip/bead_cli/workspace.py#L163)
 - [XXX: (usability) save - support saving directly to a directory outside of workspace](https://github.com/e3krisztian/bead/blob/wip/bead_cli/workspace.py#L87)
+- [XXX: try to load smaller inputs?](https://github.com/e3krisztian/bead/blob/wip/bead_cli/workspace.py#L163)
