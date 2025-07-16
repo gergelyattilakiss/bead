@@ -16,6 +16,7 @@ import shlex
 from collections.abc import Sequence
 from typing import Any
 
+import argcomplete
 
 __all__ = ['Command', 'Parser']
 
@@ -195,3 +196,7 @@ class Parser:
             return -1
         run = getattr(args, '_cmdparse__run', print_help)
         return run(args) or 0
+
+    def autocomplete(self):
+        """Enable shell autocomplete"""
+        argcomplete.autocomplete(self.argparser)

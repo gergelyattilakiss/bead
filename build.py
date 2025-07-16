@@ -117,7 +117,7 @@ def make_tool(tool_file_name, runner):
 
 
 with progress(f'Creating unix tool ({UNIX_TOOL})'):
-    UNIX_RUNNER = b'#!/usr/bin/env python3\n'
+    UNIX_RUNNER = b'#!/usr/bin/env python3\n# PYTHON_ARGCOMPLETE_OK\n'
 
     make_tool(UNIX_TOOL, UNIX_RUNNER)
     make_executable(UNIX_TOOL)
