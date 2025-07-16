@@ -5,7 +5,7 @@ from bead.test import skipUnless
 
 
 def _has_dot():
-    if shutil.which('dot') == '/usr/bin/dot':
+    if shutil.which('dot') is not None:
         try:
             output = subprocess.check_output(['dot', '-V'], stderr=subprocess.STDOUT)
         except subprocess.SubprocessError:
