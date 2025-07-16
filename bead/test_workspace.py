@@ -62,7 +62,7 @@ class Test_for_current_working_directory(TestCase):
         root = self.new_temp_dir()
         with chdir(root):
             ws = m.Workspace.for_current_working_directory()
-        assert tech.fs.Path(root) == ws.directory
+        assert tech.fs.Path(os.path.realpath(root)) == ws.directory
 
     def test_workspace_root(self):
         root = self.new_temp_dir() / 'new_workspace'
@@ -70,7 +70,7 @@ class Test_for_current_working_directory(TestCase):
         workspace.create(A_KIND)
         with chdir(root):
             ws = m.Workspace.for_current_working_directory()
-        assert tech.fs.Path(root) == ws.directory
+        assert tech.fs.Path(os.path.realpath(root)) == ws.directory
 
     def test_workspace_above_root(self):
         root = self.new_temp_dir() / 'new_workspace'
@@ -78,7 +78,7 @@ class Test_for_current_working_directory(TestCase):
         workspace.create(A_KIND)
         with chdir(root / layouts.Workspace.INPUT):
             ws = m.Workspace.for_current_working_directory()
-        assert tech.fs.Path(root) == ws.directory
+        assert tech.fs.Path(os.path.realpath(root)) == ws.directory
 
 
 class Test_pack(TestCase):
