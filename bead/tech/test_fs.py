@@ -9,7 +9,7 @@ class TestPath(TestCase):
 
     def test_div(self):
         result = m.Path('a') / 'b' / '..' / 'b'
-        assert ('a', '/', 'b') == result.partition('/')
+        assert ('a', '/', 'b') == result.as_posix().partition('/')
 
 
 class Test_make_readonly(TestCase):
@@ -32,7 +32,7 @@ class Test_make_readonly(TestCase):
 
     # implementation
 
-    __path = None
+    __path: m.Path
 
     def given_a_file(self):
         self.__path = self.new_temp_dir() / 'file'
@@ -66,7 +66,7 @@ class Test_make_writable(TestCase):
 
     # implementation
 
-    __path = None
+    __path: m.Path
 
     def given_a_read_only_file(self):
         self.__path = self.new_temp_dir() / 'file'
@@ -99,7 +99,8 @@ class Test_all_subpaths(TestCase):
 
     # implementation
 
-    __root = None
+    __root: m.Path
+    __paths: set[m.Path]
     DIRS = ('a', 'b', 'c', 'c/d')
     FILES = ('a/f', 'c/d/f1', 'c/d/f2')
 

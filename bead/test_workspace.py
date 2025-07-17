@@ -105,8 +105,8 @@ class Test_pack(TestCase):
 
     # implementation
 
-    __workspace_dir = None
-    __zipfile = None
+    __workspace_dir: Path
+    __zipfile: Path
     __SOURCE1 = b's1'
     __SOURCE2 = b's2'
     __OUTPUT1 = b'o1'
@@ -137,12 +137,12 @@ class Test_pack(TestCase):
         self.workspace.pack(self.__zipfile, timestamp(), self.__BEAD_COMMENT)
 
     def then_archive_contains_files_from_bead_directory(self):
-        with zipfile.ZipFile(self.__zipfile) as z:
+        with zipfile.ZipFile(self.__zipfile.as_posix()) as z:
             layout = layouts.Archive
 
-            assert self.__OUTPUT1 == z.read(layout.DATA / 'output1')
-            assert self.__SOURCE1 == z.read(layout.CODE / 'source1')
-            assert self.__SOURCE2 == z.read(layout.CODE / 'subdir/source2')
+            assert self.__OUTPUT1 == z.read((layout.DATA / 'output1').as_posix())
+            assert self.__SOURCE1 == z.read((layout.CODE / 'source1').as_posix())
+            assert self.__SOURCE2 == z.read((layout.CODE / 'subdir/source2').as_posix())
 
             files = z.namelist()
             assert layout.BEAD_META in files
@@ -220,7 +220,7 @@ class Test_load(TestCase):
 
     # implementation
 
-    __workspace_dir = None
+    __workspace_dir: Path
 
     @property
     def workspace(self):
@@ -364,13 +364,13 @@ class Test_is_valid(TestCase):
 
     def test_adding_a_data_file_to_an_archive_makes_bead_invalid(self, archive_path):
         with zipfile.ZipFile(archive_path, 'a') as z:
-            z.writestr(layouts.Archive.DATA / 'extra_file', b'something')
+            z.writestr((layouts.Archive.DATA / 'extra_file').as_posix(), b'something')
 
         self.assertRaises(InvalidArchive, Archive(archive_path).validate)
 
     def test_adding_a_code_file_to_an_archive_makes_bead_invalid(self, archive_path):
         with zipfile.ZipFile(archive_path, 'a') as z:
-            z.writestr(layouts.Archive.CODE / 'extra_file', b'something')
+            z.writestr((layouts.Archive.CODE / 'extra_file').as_posix(), b'something')
 
         self.assertRaises(InvalidArchive, Archive(archive_path).validate)
 

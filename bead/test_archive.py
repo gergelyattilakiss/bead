@@ -42,7 +42,7 @@ class Test_Archive(TestCase):
         self.__bead = self.new_temp_dir() / 'bead.zip'
         with zipfile.ZipFile(self.__bead, 'w') as z:
             z.writestr(
-                layouts.Archive.BEAD_META,
+                layouts.Archive.BEAD_META.as_posix(),
                 b'''
                     {
                         "meta_version": "aaa947a6-1f7a-11e6-ba3a-0021cc73492e",
@@ -55,7 +55,7 @@ class Test_Archive(TestCase):
             z.writestr('path/file1', b'''?? file1's known content''')
             z.writestr('path/to/file1', b'''file1's known content''')
             z.writestr('path/to/file2', b'''file2's known content''')
-            z.writestr(layouts.Archive.MANIFEST, b'some manifest')
+            z.writestr(layouts.Archive.MANIFEST.as_posix(), b'some manifest')
 
     def when_file1_is_extracted(self):
         self.__extractedfile = self.new_temp_dir() / 'extracted_file'

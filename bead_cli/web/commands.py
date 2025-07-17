@@ -204,7 +204,7 @@ class WriteSvg(ProcessorWithFileName):
 class View(ProcessorWithFileName):
     def __call__(self, sketch):
         print(f"Viewing {self.file_name}")
-        webbrowser.open(self.file_name)
+        webbrowser.open(self.file_name.as_posix())
 
 
 class Filter(SketchProcessor):

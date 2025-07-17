@@ -51,11 +51,11 @@ class UnpackableBead(Bead, metaclass=ABCMeta):
         self.unpack_meta_to(workspace)
 
     @abstractmethod
-    def unpack_data_to(self, path):
+    def unpack_data_to(self, fs_dir):
         pass
 
     @abstractmethod
-    def unpack_code_to(self, path):
+    def unpack_code_to(self, fs_dir):
         pass
 
     @abstractmethod

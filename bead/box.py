@@ -105,7 +105,7 @@ class Box:
     Store Beads.
     """
 
-    def __init__(self, name=None, location=None):
+    def __init__(self, name: str, location: Path):
         self.location = location
         self.name = name
 
@@ -148,12 +148,12 @@ class Box:
         else:
             glob = '*'
 
-        paths = iglob((Path(glob_escape(self.directory.as_posix())) / glob).as_posix())
+        paths = self.directory.glob(glob)
         beads = self._archives_from(paths)
         candidates = (bead for bead in beads if match(bead))
         return candidates
 
-    def _archives_from(self, paths):
+    def _archives_from(self, paths: Iterable[Path]):
         for path in paths:
             try:
                 archive = Archive(path, self.name)
