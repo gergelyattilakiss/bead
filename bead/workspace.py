@@ -245,15 +245,15 @@ class _ZipCreator:
 
     def add_file(self, path, zip_path):
         assert self.zipfile
-        path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
-        zip_path_str = zip_path.as_posix() if hasattr(zip_path, 'as_posix') else str(zip_path)
+        path_str = path.as_posix()
+        zip_path_str = zip_path.as_posix()
         self.zipfile.write(path_str, zip_path_str)
         self.add_hash(
             zip_path_str,
             securehash.file(open(path_str, 'rb'), os.path.getsize(path_str)))
 
     def add_path(self, path, zip_path):
-        path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+        path_str = path.as_posix()
         if os.path.isdir(path_str):
             self.add_directory(path, zip_path)
         else:
@@ -261,13 +261,13 @@ class _ZipCreator:
             self.add_file(path, zip_path)
 
     def add_directory(self, path, zip_path):
-        path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+        path_str = path.as_posix()
         for f in os.listdir(path_str):
             self.add_path(path / f, zip_path / f)
 
     def add_string_content(self, zip_path, string):
         assert self.zipfile
-        zip_path_str = zip_path.as_posix() if hasattr(zip_path, 'as_posix') else str(zip_path)
+        zip_path_str = zip_path.as_posix()
         bytes = string.encode('utf-8')
         self.zipfile.writestr(zip_path_str, bytes)
         self.add_hash(zip_path_str, securehash.bytes(bytes))
