@@ -25,7 +25,7 @@ trace_file = None
 if trace_file_name:
     trace_file = open(trace_file_name, 'a')
 
-last_test_function = None
+last_test_function: str | None = None
 
 
 def _cleanup():

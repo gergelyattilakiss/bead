@@ -152,7 +152,7 @@ class SketchProcessor:
 
 class ProcessorWithFileName(SketchProcessor):
     def __init__(self, args):
-        self.file_name = args.pop()
+        self.file_name = tech.fs.Path(args.pop())
 
 
 class LoadAll(SketchProcessor):

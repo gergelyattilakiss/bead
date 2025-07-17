@@ -96,7 +96,7 @@ class DefaultArgSentinel:
     I also provide human sensible description for the default value.
     '''
 
-    def __init__(self, description):
+    def __init__(self, description: str):
         self.description = description
 
     def __repr__(self):

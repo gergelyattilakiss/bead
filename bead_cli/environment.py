@@ -2,9 +2,11 @@
 User specific environment
 '''
 
+import os
+
 from bead.box import Box
 from bead.tech import persistence
-import os
+from bead.tech.fs import Path
 
 ENV_BOXES = 'boxes'
 BOX_NAME = 'name'
@@ -18,7 +20,7 @@ class Environment:
     Currently includes just the list of boxes and their definitions.
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename: Path):
         self.filename = filename
         self._content = {}
         if os.path.exists(self.filename):
@@ -26,7 +28,7 @@ class Environment:
 
     @classmethod
     def from_dir(cls, directory):
-        return cls(os.path.join(directory, 'env.json'))
+        return cls(Path(os.path.join(directory, 'env.json')))
 
     def load(self):
         with open(self.filename, 'r') as f:

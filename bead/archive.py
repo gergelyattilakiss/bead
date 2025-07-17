@@ -36,7 +36,7 @@ def _cached_zip_attribute(cache_key: str, ziparchive_attribute):
 
 
 class Archive(UnpackableBead):
-    def __init__(self, filename, box_name=''):
+    def __init__(self, filename: tech.fs.Path, box_name=''):
         self.archive_filename = filename
         self.archive_path = pathlib.Path(filename)
         self.box_name = box_name
@@ -153,7 +153,7 @@ def bead_name_from_file_path(path):
     name_with_timestamp, ext = os.path.splitext(os.path.basename(path))
     # assert ext == '.zip'  # not enforced to allow having beads with different extensions
     name = re.sub('_[0-9]{8}(?:[tT][-+0-9]*)?$', '', name_with_timestamp)
-    return name
+    return meta.BeadName(name)
 
 
 assert 'bead-2015v3' == bead_name_from_file_path('bead-2015v3.zip')

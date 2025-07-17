@@ -15,7 +15,7 @@ ZERO = timedelta(0)
 class FixedOffset(tzinfo):
     """Fixed offset in minutes east from UTC."""
 
-    def __init__(self, offset, name):
+    def __init__(self, offset, name: str):
         self.__offset = timedelta(minutes = offset)
         self.__name = name
 
@@ -98,7 +98,7 @@ def _compile_parser(template):
         template = template.replace(name, regexp)
     match = re.compile(template + '$').match
 
-    def convert(timeish):
+    def convert(timeish: str):
         parts = match(timeish)
         if parts:
             values = parts.groupdict()
