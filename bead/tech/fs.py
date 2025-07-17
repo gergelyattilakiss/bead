@@ -4,52 +4,44 @@ import stat
 import contextlib
 import shutil
 import tempfile
-
-
-class Path(str):
-
-    def __new__(cls, path):
-        assert os.path.sep == '\\' or '\\' not in path, (
-            '\\ in file names prevents being cross-platform', path)
-        slash_path = os.path.normpath(path).replace('\\', '/')
-        return super(Path, cls).__new__(cls, slash_path)
-
-    def __div__(self, other):
-        return self.__class__(os.path.join(self, other))
-
-    __truediv__ = __div__
+from pathlib import Path
 
 
 def ensure_directory(path: Path):
-    if not os.path.exists(path):
-        os.makedirs(path)
+    path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+    if not os.path.exists(path_str):
+        os.makedirs(path_str)
 
-    assert os.path.isdir(path)
+    assert os.path.isdir(path_str)
 
 
 def write_file(path: Path, content: bytes | str):
+    path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
     if isinstance(content, bytes):
-        f = open(path, 'wb')
+        f = open(path_str, 'wb')
 
         with f:
             f.write(content)
     else:
-        f = io.open(path, 'wt', encoding='utf-8')
+        f = io.open(path_str, 'wt', encoding='utf-8')
 
         with f:
             f.write(content)
 
 
 def read_file(path: Path):
-    with io.open(path, 'rt', encoding='utf-8') as f:
+    path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+    with io.open(path_str, 'rt', encoding='utf-8') as f:
         return f.read()
 
 
 @contextlib.contextmanager
-def temp_dir(dir=Path('.')):
+def temp_dir(dir=None):
+    if dir is None:
+        dir = Path.cwd()
     ensure_directory(dir)
 
-    temp_dir = tempfile.mkdtemp(dir=dir)
+    temp_dir = tempfile.mkdtemp(dir=str(dir))
     try:
         yield Path(temp_dir)
     finally:
@@ -62,17 +54,20 @@ def make_readonly(path: Path):
 
     Might fail (silently) on other systems as well.
     '''
-    mode = os.stat(path)[stat.ST_MODE]
-    os.chmod(path, mode & ~stat.S_IWRITE)
+    path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+    mode = os.stat(path_str)[stat.ST_MODE]
+    os.chmod(path_str, mode & ~stat.S_IWRITE)
 
 
 def make_writable(path: Path):
-    mode = os.stat(path)[stat.ST_MODE]
-    os.chmod(path, mode | stat.S_IWRITE)
+    path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+    mode = os.stat(path_str)[stat.ST_MODE]
+    os.chmod(path_str, mode | stat.S_IWRITE)
 
 
 def all_subpaths(dir: Path, followlinks=False):
-    for root, _dirs, files in os.walk(dir, followlinks=followlinks):
+    dir_str = dir.as_posix() if hasattr(dir, 'as_posix') else str(dir)
+    for root, _dirs, files in os.walk(dir_str, followlinks=followlinks):
         root = Path(root)
         yield root
         for file in files:
@@ -81,6 +76,8 @@ def all_subpaths(dir: Path, followlinks=False):
 
 def rmtree(root: Path, *args, **kwargs):
     for path in all_subpaths(root, followlinks=False):
-        if not os.path.islink(path):
+        path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+        if not os.path.islink(path_str):
             make_writable(path)
-    shutil.rmtree(root, *args, **kwargs)
+    root_str = root.as_posix() if hasattr(root, 'as_posix') else str(root)
+    shutil.rmtree(root_str, *args, **kwargs)

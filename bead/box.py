@@ -148,7 +148,7 @@ class Box:
         else:
             glob = '*'
 
-        paths = iglob(Path(glob_escape(self.directory)) / glob)
+        paths = iglob((Path(glob_escape(self.directory.as_posix())) / glob).as_posix())
         beads = self._archives_from(paths)
         candidates = (bead for bead in beads if match(bead))
         return candidates
@@ -165,9 +165,9 @@ class Box:
 
     def store(self, workspace, freeze_time):
         # -> Bead
-        if not os.path.exists(self.directory):
+        if not self.directory.exists():
             raise BoxError(f'Box "{self.name}": directory {self.directory} does not exist')
-        if not os.path.isdir(self.directory):
+        if not self.directory.is_dir():
             raise BoxError(f'Box "{self.name}": {self.directory} is not a directory')
         zipfilename = (
             self.directory / f'{workspace.name}_{freeze_time}.zip')
@@ -185,7 +185,7 @@ class Box:
         '''
         assert isinstance(timestamp, datetime)
         try:
-            filenames = os.listdir(self.directory)
+            filenames = os.listdir(self.directory.as_posix())
         except FileNotFoundError:
             filenames = []
         paths = (self.directory / fname for fname in filenames)

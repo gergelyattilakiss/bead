@@ -25,17 +25,17 @@ class Workspace(Bead):
     directory: fs.Path
 
     def __init__(self, directory):
-        self.directory = fs.Path(os.path.realpath(directory))
+        self.directory = fs.Path(directory).resolve()
 
     @property
     def is_valid(self):
         dir = self.directory
         return all(
             (
-                os.path.isdir(dir / layouts.Workspace.INPUT),
-                os.path.isdir(dir / layouts.Workspace.OUTPUT),
-                os.path.isdir(dir / layouts.Workspace.TEMP),
-                os.path.isfile(dir / layouts.Workspace.BEAD_META)))
+                (dir / layouts.Workspace.INPUT).is_dir(),
+                (dir / layouts.Workspace.OUTPUT).is_dir(),
+                (dir / layouts.Workspace.TEMP).is_dir(),
+                (dir / layouts.Workspace.BEAD_META).is_file()))
 
     @property
     def _meta_filename(self):
@@ -56,7 +56,7 @@ class Workspace(Bead):
 
     @property
     def name(self):
-        return os.path.basename(self.directory)
+        return self.directory.name
 
     @property
     def inputs(self):
@@ -86,7 +86,7 @@ class Workspace(Bead):
         Works with either an empty directory or a directory to be created.
         '''
         dir = self.directory
-        assert not os.path.exists(dir)
+        assert not dir.exists()
 
         self.create_directories()
 
@@ -112,12 +112,13 @@ class Workspace(Bead):
         '''
         Create archive from workspace.
         '''
-        assert not os.path.exists(zipfilename)
+        zipfilename = fs.Path(zipfilename)
+        assert not zipfilename.exists()
         try:
-            _ZipCreator().create(zipfilename, self, freeze_time, comment)
+            _ZipCreator().create(zipfilename.as_posix(), self, freeze_time, comment)
         except (RuntimeError, Exception):
-            if os.path.exists(zipfilename):
-                os.remove(zipfilename)
+            if zipfilename.exists():
+                zipfilename.unlink()
             raise
 
     def has_input(self, input_nick):
@@ -129,8 +130,7 @@ class Workspace(Bead):
         return input_nick in self.meta[meta.INPUTS]
 
     def is_loaded(self, input_nick):
-        return os.path.isdir(
-            self.directory / layouts.Workspace.INPUT / input_nick)
+        return (self.directory / layouts.Workspace.INPUT / input_nick).is_dir()
 
     def add_input(self, input_nick, kind, content_id, freeze_time_str):
         m = self.meta
@@ -245,27 +245,32 @@ class _ZipCreator:
 
     def add_file(self, path, zip_path):
         assert self.zipfile
-        self.zipfile.write(path, zip_path)
+        path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+        zip_path_str = zip_path.as_posix() if hasattr(zip_path, 'as_posix') else str(zip_path)
+        self.zipfile.write(path_str, zip_path_str)
         self.add_hash(
-            zip_path,
-            securehash.file(open(path, 'rb'), os.path.getsize(path)))
+            zip_path_str,
+            securehash.file(open(path_str, 'rb'), os.path.getsize(path_str)))
 
     def add_path(self, path, zip_path):
-        if os.path.isdir(path):
+        path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+        if os.path.isdir(path_str):
             self.add_directory(path, zip_path)
         else:
-            assert os.path.isfile(path), '%s is neither a file nor a directory' % path
+            assert os.path.isfile(path_str), '%s is neither a file nor a directory' % path_str
             self.add_file(path, zip_path)
 
     def add_directory(self, path, zip_path):
-        for f in os.listdir(path):
+        path_str = path.as_posix() if hasattr(path, 'as_posix') else str(path)
+        for f in os.listdir(path_str):
             self.add_path(path / f, zip_path / f)
 
     def add_string_content(self, zip_path, string):
         assert self.zipfile
+        zip_path_str = zip_path.as_posix() if hasattr(zip_path, 'as_posix') else str(zip_path)
         bytes = string.encode('utf-8')
-        self.zipfile.writestr(zip_path, bytes)
-        self.add_hash(zip_path, securehash.bytes(bytes))
+        self.zipfile.writestr(zip_path_str, bytes)
+        self.add_hash(zip_path_str, securehash.bytes(bytes))
 
     def create(self, zip_file_name, workspace, timestamp, comment):
         assert workspace.is_valid
@@ -294,15 +299,16 @@ class _ZipCreator:
 
     def add_code(self, workspace):
         source_directory = workspace.directory
+        source_directory_str = source_directory.as_posix()
 
         def is_code(f):
             return f not in {
-                layouts.Workspace.INPUT,
-                layouts.Workspace.OUTPUT,
-                layouts.Workspace.META,
-                layouts.Workspace.TEMP}
+                layouts.Workspace.INPUT.as_posix(),
+                layouts.Workspace.OUTPUT.as_posix(),
+                layouts.Workspace.META.as_posix(),
+                layouts.Workspace.TEMP.as_posix()}
 
-        for f in sorted(os.listdir(source_directory)):
+        for f in sorted(os.listdir(source_directory_str)):
             if is_code(f):
                 self.add_path(
                     source_directory / f,
