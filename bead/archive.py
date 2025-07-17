@@ -150,8 +150,7 @@ def bead_name_from_file_path(path):
 
     Might return a simpler name than intended
     '''
-    path_str = path.as_posix()
-    name_with_timestamp, ext = os.path.splitext(os.path.basename(path_str))
+    name_with_timestamp, ext = os.path.splitext(os.path.basename(path))
     # assert ext == '.zip'  # not enforced to allow having beads with different extensions
     name = re.sub('_[0-9]{8}(?:[tT][-+0-9]*)?$', '', name_with_timestamp)
     return meta.BeadName(name)

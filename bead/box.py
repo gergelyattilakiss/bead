@@ -185,7 +185,7 @@ class Box:
         '''
         assert isinstance(timestamp, datetime)
         try:
-            filenames = os.listdir(self.directory.as_posix())
+            filenames = os.listdir(self.directory)
         except FileNotFoundError:
             filenames = []
         paths = (self.directory / fname for fname in filenames)

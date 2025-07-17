@@ -245,24 +245,21 @@ class _ZipCreator:
 
     def add_file(self, path, zip_path):
         assert self.zipfile
-        path_str = path.as_posix()
         zip_path_str = zip_path.as_posix()
-        self.zipfile.write(path_str, zip_path_str)
+        self.zipfile.write(path, zip_path_str)
         self.add_hash(
             zip_path_str,
-            securehash.file(open(path_str, 'rb'), os.path.getsize(path_str)))
+            securehash.file(open(path, 'rb'), os.path.getsize(path)))
 
     def add_path(self, path, zip_path):
-        path_str = path.as_posix()
-        if os.path.isdir(path_str):
+        if os.path.isdir(path):
             self.add_directory(path, zip_path)
         else:
-            assert os.path.isfile(path_str), '%s is neither a file nor a directory' % path_str
+            assert os.path.isfile(path), '%s is neither a file nor a directory' % path
             self.add_file(path, zip_path)
 
     def add_directory(self, path, zip_path):
-        path_str = path.as_posix()
-        for f in os.listdir(path_str):
+        for f in os.listdir(path):
             self.add_path(path / f, zip_path / f)
 
     def add_string_content(self, zip_path, string):
@@ -299,7 +296,6 @@ class _ZipCreator:
 
     def add_code(self, workspace):
         source_directory = workspace.directory
-        source_directory_str = source_directory.as_posix()
 
         def is_code(f):
             return f not in {
@@ -308,7 +304,7 @@ class _ZipCreator:
                 layouts.Workspace.META.as_posix(),
                 layouts.Workspace.TEMP.as_posix()}
 
-        for f in sorted(os.listdir(source_directory_str)):
+        for f in sorted(os.listdir(source_directory)):
             if is_code(f):
                 self.add_path(
                     source_directory / f,
