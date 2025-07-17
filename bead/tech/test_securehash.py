@@ -28,6 +28,7 @@ class Test(TestCase):
 
     __file = None
     __hashresult = None
+    __hashresults = (None, None)
     __some_bytes = None
 
     def given_a_file(self):
@@ -53,7 +54,7 @@ class Test(TestCase):
 
     def when_file_and_bytes_are_hashed(self):
         with open(self.__file, 'rb') as f:
-            self.__hashresult = (
+            self.__hashresults = (
                 securehash.bytes(self.__some_bytes),
                 securehash.file(f, os.path.getsize(self.__file))
             )
@@ -64,4 +65,4 @@ class Test(TestCase):
         assert len(self.__hashresult) > 32
 
     def then_the_hashes_are_the_same(self):
-        assert self.__hashresult[0] == self.__hashresult[1]
+        assert self.__hashresults[0] == self.__hashresults[1]

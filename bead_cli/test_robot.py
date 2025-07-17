@@ -33,6 +33,9 @@ class Robot(Fixture):
     and working directories.
     '''
 
+    cwd: tech.fs.Path
+    base_dir: tech.fs.Path
+
     def setUp(self):
         super(Robot, self).setUp()
         self.base_dir = self.useFixture(TempDir()).path
@@ -42,7 +45,6 @@ class Robot(Fixture):
 
     def cleanUp(self):
         super(Robot, self).cleanUp()
-        self.base_dir = None
 
     @property
     def config_dir(self):

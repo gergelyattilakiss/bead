@@ -23,7 +23,7 @@ def chdir(directory):
 
 
 @contextlib.contextmanager
-def setenv(variable, value):
+def setenv(variable: str, value: str):
     old_value = os.environ.get(variable)
     try:
         os.environ[variable] = value
@@ -35,7 +35,7 @@ def setenv(variable, value):
             os.environ[variable] = old_value
 
 
-skip, skipIf, skipUnless  # reexport
+_ = skip, skipIf, skipUnless  # reexport
 
 
 class TestCase(tests.arglinker.TestCase):
@@ -99,6 +99,7 @@ class Fixture:
 
 
 class TempDir(Fixture):
+    path: tech.fs.Path
 
     def setUp(self):
         super().setUp()

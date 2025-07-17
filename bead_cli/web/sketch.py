@@ -122,7 +122,7 @@ def add_final_sink_to(sketch: Sketch) -> Tuple[Sketch, Dummy]:
     )
 
 
-def set_sources(sketch: Sketch, cluster_names: List[str]) -> Sketch:
+def set_sources(sketch: Sketch, cluster_names: Iterable[str]) -> Sketch:
     """
     Drop all clusters, that are not reachable from the named clusters.
 
@@ -138,7 +138,7 @@ def set_sources(sketch: Sketch, cluster_names: List[str]) -> Sketch:
     return cluster_filter.get_filtered_by_refs(cluster_refs_to_keep)
 
 
-def set_sinks(sketch: Sketch, cluster_names: List[str]) -> Sketch:
+def set_sinks(sketch: Sketch, cluster_names: Iterable[str]) -> Sketch:
     """
     Drop all clusters, that do not lead to any of the named clusters.
 

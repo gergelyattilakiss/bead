@@ -100,7 +100,7 @@ class Parser:
             self.__subparsers = self.argparser.add_subparsers()
         return self.__subparsers
 
-    def _make_command(self, commandish: Command | type) -> Command:
+    def _make_command(self, commandish: Command | type) -> Command | None:
         '''
         Make a proper Command instance.
 
@@ -109,9 +109,12 @@ class Parser:
         '''
         if isinstance(commandish, Command):
             return commandish
+
         if issubclass(commandish, Command):
             instance = commandish()
             return instance
+
+        return None
 
     def arg(self, *args: Any, **kwargs: Any) -> None:
         '''

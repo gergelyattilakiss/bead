@@ -22,7 +22,7 @@ class Cluster:
             Dummy(
                 name=name,
                 freeze_time_str=EPOCH_STR,
-                content_id=None,
+                content_id='PhantomBead',
                 kind='EMPTY CLUSTER'))
         phantom_head.set_freshness(Freshness.PHANTOM)
         self.head = phantom_head

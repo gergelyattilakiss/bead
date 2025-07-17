@@ -1,3 +1,5 @@
+# FIXME: convert tests to pytest
+# type: ignore
 from bead.test import TempDir
 from tracelog import TRACELOG
 
