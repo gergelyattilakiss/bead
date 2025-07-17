@@ -89,7 +89,7 @@ class CmdSave(Command):
             boxes = env.get_boxes()
             if not boxes:
                 warning('No boxes have been defined')
-                beadbox = os.path.expanduser('~/BeadBox')
+                beadbox = tech.fs.Path(os.path.expanduser('~/BeadBox'))
                 info(f'Creating and using a new one with name `home` and location {beadbox}')
                 tech.fs.ensure_directory(beadbox)
                 env.add_box('home', beadbox)

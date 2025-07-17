@@ -20,30 +20,33 @@ class Path(str):
     __truediv__ = __div__
 
 
-def ensure_directory(path):
+def ensure_directory(path: Path):
     if not os.path.exists(path):
         os.makedirs(path)
 
     assert os.path.isdir(path)
 
 
-def write_file(path, content):
+def write_file(path: Path, content: bytes | str):
     if isinstance(content, bytes):
         f = open(path, 'wb')
+
+        with f:
+            f.write(content)
     else:
         f = io.open(path, 'wt', encoding='utf-8')
 
-    with f:
-        f.write(content)
+        with f:
+            f.write(content)
 
 
-def read_file(path):
+def read_file(path: Path):
     with io.open(path, 'rt', encoding='utf-8') as f:
         return f.read()
 
 
 @contextlib.contextmanager
-def temp_dir(dir='.'):
+def temp_dir(dir=Path('.')):
     ensure_directory(dir)
 
     temp_dir = tempfile.mkdtemp(dir=dir)
@@ -53,7 +56,7 @@ def temp_dir(dir='.'):
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 
-def make_readonly(path):
+def make_readonly(path: Path):
     '''
     WARNING: It does not work for Windows folders.
 
@@ -63,12 +66,12 @@ def make_readonly(path):
     os.chmod(path, mode & ~stat.S_IWRITE)
 
 
-def make_writable(path):
+def make_writable(path: Path):
     mode = os.stat(path)[stat.ST_MODE]
     os.chmod(path, mode | stat.S_IWRITE)
 
 
-def all_subpaths(dir, followlinks=False):
+def all_subpaths(dir: Path, followlinks=False):
     for root, _dirs, files in os.walk(dir, followlinks=followlinks):
         root = Path(root)
         yield root
@@ -76,7 +79,7 @@ def all_subpaths(dir, followlinks=False):
             yield root / file
 
 
-def rmtree(root, *args, **kwargs):
+def rmtree(root: Path, *args, **kwargs):
     for path in all_subpaths(root, followlinks=False):
         if not os.path.islink(path):
             make_writable(path)

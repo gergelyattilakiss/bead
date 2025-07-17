@@ -22,7 +22,7 @@ META_VERSION = 'aaa947a6-1f7a-11e6-ba3a-0021cc73492e'
 
 class Workspace(Bead):
 
-    directory = None
+    directory: fs.Path
 
     def __init__(self, directory):
         self.directory = fs.Path(os.path.realpath(directory))
@@ -244,6 +244,7 @@ class _ZipCreator:
         self.hashes[path] = hash
 
     def add_file(self, path, zip_path):
+        assert self.zipfile
         self.zipfile.write(path, zip_path)
         self.add_hash(
             zip_path,
@@ -261,6 +262,7 @@ class _ZipCreator:
             self.add_path(path / f, zip_path / f)
 
     def add_string_content(self, zip_path, string):
+        assert self.zipfile
         bytes = string.encode('utf-8')
         self.zipfile.writestr(zip_path, bytes)
         self.add_hash(zip_path, securehash.bytes(bytes))
