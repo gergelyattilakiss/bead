@@ -53,7 +53,7 @@ FIXME: clean up documentation.
 
 ## Install instructions
 
-Ensure you have Python 3.6+ installed.
+Ensure you have Python 3.10+ installed.
 
 Run `make executables` to create the `bead` tool:
 

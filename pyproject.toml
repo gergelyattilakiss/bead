@@ -29,6 +29,7 @@ dev = [
     "freezegun",
     "pytest",
     "mypy",
+    "pytype>=2024.10.11",
 ]
 
 [tool.pyright]

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+[ $# -ge 1 ] || { echo "Usage: $0 container [command [args]]"; exit 1; }
+
+container="$1"
+shift
+command="${1:-/bin/bash}"
+shift
+
+exec podman exec -it --user root "$container" "$command" "$@"
+

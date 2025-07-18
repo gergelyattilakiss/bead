@@ -1,0 +1,2 @@
+#!/bin/sh
+exec podman run --rm -it -v $PWD:$PWD -v $HOME/.cache/uv:$HOME/.cache/uv -w $PWD --user $(id -u):$(id -g) ghcr.io/astral-sh/uv:python3.12-bookworm-slim /bin/bash

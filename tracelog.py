@@ -4,7 +4,7 @@ Logging during tests with human readable output to file.
 Much simpler than logging: this is intended to be used only from test code.
 
 Command line usage:
-    $ TRACELOG=traces.log ./test
+    $ TRACELOG=traces.log dev/test
 
 Beware of multi-process capable runners: they will interweave messages.
 '''

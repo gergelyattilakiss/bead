@@ -1,0 +1,3 @@
+#!/bin/sh
+uv sync
+exec pytype -k -j auto bead bead_cli __main__.py tests tracelog.py dev/build.py 
