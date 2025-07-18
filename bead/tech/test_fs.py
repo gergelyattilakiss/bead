@@ -5,13 +5,6 @@ from . import fs as m
 import os
 
 
-class TestPath(TestCase):
-
-    def test_div(self):
-        result = m.Path('a') / 'b' / '..' / 'b'
-        assert ('a', '/', 'b') == result.as_posix().partition('/')
-
-
 class Test_make_readonly(TestCase):
 
     def test_file(self):

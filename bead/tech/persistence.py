@@ -39,12 +39,12 @@ def dump(content, ostream):
     json.dump(content, ostream, **JSON_SAVE_OPTIONS)
 
 
-def zip_load(zipfile, path):
+def zip_load(zipfile, path: str):
     with zipfile.open(path) as f:
         return load(io.TextIOWrapper(f, encoding='utf-8'))
 
 
-def zip_dump(content, zipfile, path):
+def zip_dump(content, zipfile, path: str):
     with zipfile.open(path, 'w') as f:
         return dump(content, io.TextIOWrapper(f, encoding='utf-8'))
 

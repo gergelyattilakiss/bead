@@ -42,18 +42,18 @@ class Environment:
         def box(box_spec):
             return Box(
                 box_spec.get(BOX_NAME),
-                box_spec.get(BOX_LOCATION))
+                Path(box_spec.get(BOX_LOCATION)))
         return [box(spec) for spec in self._content.get(ENV_BOXES, ())]
 
     def set_boxes(self, boxes):
         self._content[ENV_BOXES] = [
             {
                 BOX_NAME: box.name,
-                BOX_LOCATION: box.location
+                BOX_LOCATION: box.location.as_posix()
             }
             for box in boxes]
 
-    def add_box(self, name, directory):
+    def add_box(self, name, directory: Path):
         boxes = self.get_boxes()
         # check unique box
         for box in boxes:

@@ -77,8 +77,8 @@ class ZipArchive(UnpackableBead):
         return freeze_time <= now
 
     def _extra_file(self):
-        data_dir_prefix = layouts.Archive.DATA.as_posix() + '/'
-        code_dir_prefix = layouts.Archive.CODE.as_posix() + '/'
+        data_dir_prefix = layouts.Archive.DATA + '/'
+        code_dir_prefix = layouts.Archive.CODE + '/'
         manifest = self.manifest
         # check that there are no extra files
         for name in self.zipfile.namelist():
@@ -113,7 +113,7 @@ class ZipArchive(UnpackableBead):
         # there is currently only one meta version
         # and it must match the one defined in the workspace module
         assert self._meta[meta.META_VERSION] == 'aaa947a6-1f7a-11e6-ba3a-0021cc73492e'
-        zipinfo = self.zipfile.getinfo(layouts.Archive.MANIFEST.as_posix())
+        zipinfo = self.zipfile.getinfo(layouts.Archive.MANIFEST)
         with self.zipfile.open(zipinfo) as f:
             return securehash.file(f, zipinfo.file_size)
 
@@ -156,28 +156,28 @@ class ZipArchive(UnpackableBead):
         except:
             raise InvalidArchive(self.archive_filename)
 
-    def extract_file(self, zip_path, fs_path):
+    def extract_file(self, zip_path: str, fs_path: tech.fs.Path):
         '''
             Extract zip_path from zipfile to fs_path.
         '''
-        fs_path = os.path.normpath(fs_path)
+        fs_path = tech.fs.Path(os.path.normpath(fs_path.as_posix()))
 
-        upperdirs = os.path.dirname(fs_path)
+        upperdirs = os.path.dirname(fs_path.as_posix())
         if upperdirs:
-            tech.fs.ensure_directory(upperdirs)
+            tech.fs.ensure_directory(tech.fs.Path(upperdirs))
 
         with self.zipfile.open(zip_path) as source:
             with open(fs_path, 'wb') as target:
                 shutil.copyfileobj(source, target)
 
-    def extract_dir(self, zip_dir: tech.fs.Path, fs_dir):
+    def extract_dir(self, zip_dir: str, fs_dir: tech.fs.Path):
         '''
             Extract all files from zipfile under zip_dir to fs_dir.
         '''
 
         tech.fs.ensure_directory(fs_dir)
 
-        zip_dir_prefix = zip_dir.as_posix() + '/'
+        zip_dir_prefix = zip_dir + '/'
         zip_dir_prefix_len = len(zip_dir_prefix)
 
         for zip_path in self.zipfile.namelist():

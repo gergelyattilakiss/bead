@@ -15,7 +15,6 @@ Boxes can be used to:
 '''
 
 from datetime import datetime, timedelta
-from glob import iglob, escape as glob_escape
 import os
 from typing import Iterator, Iterable, Sequence
 

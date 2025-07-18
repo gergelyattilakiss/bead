@@ -9,15 +9,15 @@ Path = tech.fs.Path
 
 class Archive:
 
-    META = Path('meta')
-    CODE = Path('code')
-    DATA = Path('data')
+    META = 'meta'
+    CODE = 'code'
+    DATA = 'data'
 
-    BEAD_META = META / 'bead'
-    MANIFEST = META / 'manifest'
+    BEAD_META = f'{META}/bead'
+    MANIFEST = f'{META}/manifest'
 
     # volatile content, not included in generation of content_id
-    INPUT_MAP = META / 'input.map'
+    INPUT_MAP = f'{META}/input.map'
 
 
 class Workspace:

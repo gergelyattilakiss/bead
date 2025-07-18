@@ -15,7 +15,7 @@ def environment(robot):
     '''
     Context manager - enable running code in the context of the robot.
     '''
-    with setenv('HOME', robot.home):
+    with setenv('HOME', robot.home.as_posix()):
         with chdir(robot.cwd):
             try:
                 yield Environment.from_dir(robot.config_dir)
@@ -78,18 +78,25 @@ class Robot(Fixture):
         '''
         return environment(self)
 
-    def cli(self, *args):
+    def cli(self, *args: str | tech.fs.Path):
         '''
         Imitate calling the command line tool with the given args
         '''
         TRACELOG(*args)
-        if len(args) == 1 and ' ' in args[0]:
-            return self.cli(*args[0].split())
+        if len(args) == 1:
+            # special case: input is a single string
+            arg = args[0]
+            assert isinstance(arg, str)
+            str_args = arg.split()
+            if len(str_args) > 1:
+                return self.cli(*str_args)
+        else:
+            str_args = [(arg if isinstance(arg, str) else arg.as_posix()) for arg in args]
 
         with self.environment:
             with CaptureStdout() as stdout, CaptureStderr() as stderr:
                 try:
-                    self.retval = run(''.__class__(self.config_dir), args)
+                    self.retval = run(''.__class__(self.config_dir), str_args)
                     assert self.retval == 0
                 except BaseException as e:
                     TRACELOG(EXCEPTION=e)

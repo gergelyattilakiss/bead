@@ -81,8 +81,8 @@ class RobotAndBeads:
                 warnings.simplefilter('ignore')
                 # this would cause a warning from zipfile for duplicate
                 # name in zip file (which is perfectly valid, though hacky)
-                z.writestr(layouts.Archive.CODE / 'code', 'HACKED')
-                z.writestr(layouts.Archive.DATA / 'README', 'HACKED')
+                z.writestr(f'{layouts.Archive.CODE}/code', 'HACKED')
+                z.writestr(f'{layouts.Archive.DATA}/README', 'HACKED')
         return hacked_bead_path
 
     def _bead_with_history(self, robot, box, bead_name, bead_kind):

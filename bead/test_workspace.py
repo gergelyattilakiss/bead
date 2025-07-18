@@ -140,9 +140,9 @@ class Test_pack(TestCase):
         with zipfile.ZipFile(self.__zipfile.as_posix()) as z:
             layout = layouts.Archive
 
-            assert self.__OUTPUT1 == z.read((layout.DATA / 'output1').as_posix())
-            assert self.__SOURCE1 == z.read((layout.CODE / 'source1').as_posix())
-            assert self.__SOURCE2 == z.read((layout.CODE / 'subdir/source2').as_posix())
+            assert self.__OUTPUT1 == z.read(f'{layout.DATA}/output1')
+            assert self.__SOURCE1 == z.read(f'{layout.CODE}/source1')
+            assert self.__SOURCE2 == z.read(f'{layout.CODE}/subdir/source2')
 
             files = z.namelist()
             assert layout.BEAD_META in files
@@ -341,7 +341,7 @@ class Test_is_valid(TestCase):
 
     def archive_path(self, workspace, timestamp):
         archive_path = self.new_temp_dir() / 'bead.zip'
-        workspace.pack(archive_path, timestamp, comment=archive_path)
+        workspace.pack(archive_path, timestamp, comment=archive_path.as_posix())
         return archive_path
 
     def archive_with_two_files_path(self, workspace, timestamp):
@@ -364,13 +364,13 @@ class Test_is_valid(TestCase):
 
     def test_adding_a_data_file_to_an_archive_makes_bead_invalid(self, archive_path):
         with zipfile.ZipFile(archive_path, 'a') as z:
-            z.writestr((layouts.Archive.DATA / 'extra_file').as_posix(), b'something')
+            z.writestr(f'{layouts.Archive.DATA}/extra_file', b'something')
 
         self.assertRaises(InvalidArchive, Archive(archive_path).validate)
 
     def test_adding_a_code_file_to_an_archive_makes_bead_invalid(self, archive_path):
         with zipfile.ZipFile(archive_path, 'a') as z:
-            z.writestr((layouts.Archive.CODE / 'extra_file').as_posix(), b'something')
+            z.writestr(f'{layouts.Archive.CODE}/extra_file', b'something')
 
         self.assertRaises(InvalidArchive, Archive(archive_path).validate)
 

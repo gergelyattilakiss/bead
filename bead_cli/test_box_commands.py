@@ -1,4 +1,3 @@
-from glob import glob
 import os
 
 from bead.test import TestCase
@@ -155,12 +154,12 @@ class Test_box_commands(TestCase):
         # b -> x
 
         # rename 'a' to 'renamed'
-        for f in glob(robot.cwd / dir1 / 'a_*.zip'):
+        for f in (robot.cwd / dir1).glob('a_*.zip'):
             # we need to keep the timestamp and zip extension
             # for the bead to remain discoverable
             ts_zip = os.path.basename(f).split('_')[1]
             os.rename(f, robot.cwd / dir1 / f'renamed_{ts_zip}')
-        for f in glob(robot.cwd / dir1 / 'a*'):
+        for f in (robot.cwd / dir1).glob('a*'):
             os.remove(f)
 
         # "renamed" ~> x

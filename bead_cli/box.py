@@ -1,5 +1,3 @@
-import os
-
 from bead import tech
 from bead.archive import Archive
 from .cmdparse import Command
@@ -14,20 +12,21 @@ class CmdAdd(Command):
 
     def declare(self, arg):
         arg('name')
-        arg('directory')
+        arg('directory', type=tech.fs.Path)
         arg(OPTIONAL_ENV)
 
     def run(self, args):
         '''
         Define a box.
         '''
-        name, directory = args.name, args.directory
+        name: str = args.name
+        directory: tech.fs.Path = args.directory
         env = args.get_env()
 
-        if not os.path.isdir(directory):
+        if not directory.is_dir():
             print(f'ERROR: "{directory}" is not an existing directory!')
             return
-        location = os.path.realpath(directory)
+        location = directory.resolve()
         try:
             env.add_box(name, location)
             env.save()
