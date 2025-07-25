@@ -26,8 +26,8 @@ def ls(robot):
 
 
 @pytest.fixture
-def box_dir(tmp_path):
-    return tmp_path / "box"
+def box_dir(tmp_path_factory):
+    return tmp_path_factory.mktemp("box")
 
 
 def test_basic_command_line(robot, cli, cd, ls, box_dir):
