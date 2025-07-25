@@ -150,15 +150,16 @@ def test_pack_archive_has_comment(packed_archive):
         assert BEAD_COMMENT == z.comment.decode('utf-8')
 
 
-def test_pack_stability_directory_name_data_and_timestamp_determines_content_ids(temp_dir):
+def test_pack_stability_directory_name_data_and_timestamp_determines_content_ids(tmp_path_factory):
     """Test that content IDs are stable based on directory name, data, and timestamp."""
     TS = '20150910T093724802366+0200'
 
     # note: it is important to create the same bead in
     # two different directories
     def make_bead():
-        output = temp_dir / f'bead_{len(os.listdir(temp_dir))}.zip'
-        ws_dir = temp_dir / f'a_bead_{len(os.listdir(temp_dir))}'
+        temp_dir = tmp_path_factory.mktemp("bead_stability")
+        output = temp_dir / 'bead.zip'
+        ws_dir = temp_dir / 'workspace'
         ws = m.Workspace(ws_dir)
         ws.create(A_KIND)
         write_file(ws.directory / 'source1', 'code to produce output')
