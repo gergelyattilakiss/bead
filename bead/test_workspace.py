@@ -25,28 +25,26 @@ def workspace_dir(temp_dir):
     return temp_dir / 'new_workspace'
 
 
-@pytest.fixture
-def workspace(workspace_dir):
-    """Create a new workspace."""
-    ws = m.Workspace(workspace_dir)
-    ws.create(A_KIND)
-    return ws
-
-
-def test_create_valid(workspace):
+def test_create_valid(workspace_dir):
     """Test that a newly created workspace is valid."""
+    workspace = m.Workspace(workspace_dir)
+    workspace.create(A_KIND)
     assert workspace.is_valid
 
 
-def test_create_has_no_inputs(workspace):
+def test_create_has_no_inputs(workspace_dir):
     """Test that a newly created workspace has no inputs."""
+    workspace = m.Workspace(workspace_dir)
+    workspace.create(A_KIND)
     assert not workspace.has_input('bead1')
     assert not workspace.is_loaded('bead1')
     assert not workspace.inputs
 
 
-def test_create_of_specified_kind(workspace):
+def test_create_of_specified_kind(workspace_dir):
     """Test that a newly created workspace has the specified kind."""
+    workspace = m.Workspace(workspace_dir)
+    workspace.create(A_KIND)
     assert A_KIND == workspace.kind
 
 
