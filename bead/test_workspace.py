@@ -1,5 +1,4 @@
 from bead.exceptions import InvalidArchive
-from .conftest import chdir
 from . import workspace as m
 
 import os
@@ -48,30 +47,30 @@ def test_create_of_specified_kind(workspace_dir):
     assert A_KIND == workspace.kind
 
 
-def test_for_current_working_directory_non_workspace(temp_dir):
+def test_for_current_working_directory_non_workspace(temp_dir, monkeypatch):
     """Test workspace detection in non-workspace directory."""
-    with chdir(temp_dir):
-        ws = m.Workspace.for_current_working_directory()
+    monkeypatch.chdir(temp_dir)
+    ws = m.Workspace.for_current_working_directory()
     assert temp_dir.resolve() == ws.directory
 
 
-def test_for_current_working_directory_workspace_root(temp_dir):
+def test_for_current_working_directory_workspace_root(temp_dir, monkeypatch):
     """Test workspace detection from workspace root."""
     root = temp_dir / 'new_workspace'
     workspace = m.Workspace(root)
     workspace.create(A_KIND)
-    with chdir(root):
-        ws = m.Workspace.for_current_working_directory()
+    monkeypatch.chdir(root)
+    ws = m.Workspace.for_current_working_directory()
     assert root.resolve() == ws.directory
 
 
-def test_for_current_working_directory_above_root(temp_dir):
+def test_for_current_working_directory_above_root(temp_dir, monkeypatch):
     """Test workspace detection from subdirectory."""
     root = temp_dir / 'new_workspace'
     workspace = m.Workspace(root)
     workspace.create(A_KIND)
-    with chdir(root / layouts.Workspace.INPUT):
-        ws = m.Workspace.for_current_working_directory()
+    monkeypatch.chdir(root / layouts.Workspace.INPUT)
+    ws = m.Workspace.for_current_working_directory()
     assert root.resolve() == ws.directory
 
 
