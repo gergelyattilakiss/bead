@@ -1,32 +1,35 @@
-[tool.poetry]
+[project]
 name = "bead"
 version = "0.8.1"
 description = "Linked frozen computations"
-authors = ["Krisztián Fekete"]
-license = "The Unlicense"
+authors = [{name = "Krisztián Fekete"}]
+license = {text = "The Unlicense"}
+requires-python = ">=3.10"
 packages = [
     { include = "bead" },
     { include = "bead_cli" },
     { include = "tracelog.py" },
     { include = "tests" },
 ]
+dependencies = [
+    "appdirs",
+    "attrs",
+    "cached-property",
+    "pip>=25.1.1",
+]
 
-[tool.poetry.scripts]
+[project.scripts]
 bead = 'bead_cli.main:main'
 
-[tool.poetry.dependencies]
-python = "> 3.6"
-appdirs = ""
-attrs = ""
-cached-property = ""
-
-[tool.poetry.dev-dependencies]
-pytest-cov = ""
-flake8 = ""
-freezegun = ""
-pytest = "^5.3"
-mypy = ""
+[dependency-groups]
+dev = [
+    "pytest-cov",
+    "flake8",
+    "freezegun",
+    "pytest",
+    "mypy",
+]
 
 [build-system]
-requires = ["poetry>=1.0"]
-build-backend = "poetry.masonry.api"
+requires = ["flit_core"]
+build-backend = "flit_core.buildapi"
