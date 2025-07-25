@@ -32,37 +32,39 @@ def timestamp():
 
 def test_all_beads(box):
     """Test that all beads are returned."""
-    assert set(['bead1', 'bead2', 'BEAD3']) == set(b.name for b in box.all_beads())
+    bead_names = set(b.name for b in box.all_beads())
+    assert set(['bead1', 'bead2', 'BEAD3']) == bead_names
 
 
 def test_find_names(box, timestamp):
     """Test finding beads by name."""
-    (
-        exact_match, best_guess, best_guess_timestamp, names
-    ) = box.find_names(kind='test-bead1', content_id='', timestamp=timestamp)
+    result = box.find_names(kind='test-bead1', content_id='', timestamp=timestamp)
+    exact_match, best_guess, best_guess_timestamp, names = result
 
     assert exact_match is None
     assert 'bead1' == best_guess
     assert best_guess_timestamp is not None
-    assert set(['bead1']) == set(names)
+    names_set = set(names)
+    assert set(['bead1']) == names_set
 
 
 def test_find_names_works_even_with_removed_box_directory(box, timestamp):
     """Test that find_names handles missing box directory gracefully."""
     rmtree(box.directory)
-    (
-        exact_match, best_guess, best_guess_timestamp, names
-    ) = box.find_names(kind='test-bead1', content_id='', timestamp=timestamp)
+    result = box.find_names(kind='test-bead1', content_id='', timestamp=timestamp)
+    exact_match, best_guess, best_guess_timestamp, names = result
     assert exact_match is None
     assert best_guess is None
     assert best_guess_timestamp is None
-    assert [] == list(names)
+    names_list = list(names)
+    assert [] == names_list
 
 
 def test_find_with_uppercase_name(box, timestamp):
     """Test finding beads with uppercase names."""
     matches = box.get_context(bead_spec.BEAD_NAME, 'BEAD3', timestamp)
-    assert 'BEAD3' == matches.best.name
+    best_name = matches.best.name
+    assert 'BEAD3' == best_name
 
 
 def test_box_methods_tolerate_junk_in_box(tmp_path_factory):
@@ -80,6 +82,8 @@ def test_box_methods_tolerate_junk_in_box(tmp_path_factory):
     add_bead('BEAD3', 'test-bead3', '20160704T162800000001+0200')
     
     # add junk
-    write_file(box.directory / 'some-non-bead-file', 'random bits')
+    junk_file = box.directory / 'some-non-bead-file'
+    write_file(junk_file, 'random bits')
     
-    assert set(['bead1', 'bead2', 'BEAD3']) == set(b.name for b in box.all_beads())
+    bead_names = set(b.name for b in box.all_beads())
+    assert set(['bead1', 'bead2', 'BEAD3']) == bead_names

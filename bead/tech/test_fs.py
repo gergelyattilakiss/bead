@@ -73,15 +73,19 @@ def test_all_subpaths(tmp_path):
     # given some directory structure with files
     root = tmp_path
     for dir in DIRS:
-        os.makedirs(root / dir)
+        dir_path = root / dir
+        os.makedirs(dir_path)
     for f in FILES:
-        m.write_file(root / f, '')
+        file_path = root / f
+        m.write_file(file_path, '')
     
     # when all paths are collected
     paths = set(m.all_subpaths(root))
     
     # then all paths are found
-    all_paths = {root} | set(root / d for d in DIRS) | set(root / f for f in FILES)
+    dir_paths = set(root / d for d in DIRS)
+    file_paths = set(root / f for f in FILES)
+    all_paths = {root} | dir_paths | file_paths
     assert all_paths == paths
 
 
@@ -90,4 +94,5 @@ def test_read_write_file(tmp_path):
     testfile = tmp_path / 'testfile'
     content = u'Test_read_write_file testfile content / áíőóüú@!#@!#$$@'
     m.write_file(testfile, content)
-    assert content == m.read_file(testfile)
+    read_content = m.read_file(testfile)
+    assert content == read_content

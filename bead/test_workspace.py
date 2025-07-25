@@ -118,12 +118,17 @@ def test_pack_creates_valid_archive(packed_archive):
 
 def test_pack_archives_all_content(packed_archive):
     """Test that packing includes all expected content."""
-    with zipfile.ZipFile(packed_archive.as_posix()) as z:
+    archive_path = packed_archive.as_posix()
+    with zipfile.ZipFile(archive_path) as z:
         layout = layouts.Archive
 
-        assert OUTPUT1 == z.read(f'{layout.DATA}/output1')
-        assert SOURCE1 == z.read(f'{layout.CODE}/source1')
-        assert SOURCE2 == z.read(f'{layout.CODE}/subdir/source2')
+        output1_content = z.read(f'{layout.DATA}/output1')
+        source1_content = z.read(f'{layout.CODE}/source1')
+        source2_content = z.read(f'{layout.CODE}/subdir/source2')
+        
+        assert OUTPUT1 == output1_content
+        assert SOURCE1 == source1_content
+        assert SOURCE2 == source2_content
 
         files = z.namelist()
         assert layout.BEAD_META in files
@@ -145,7 +150,8 @@ def test_pack_not_saved_content(packed_archive):
 def test_pack_archive_has_comment(packed_archive):
     """Test that the archive has the expected comment."""
     with zipfile.ZipFile(packed_archive) as z:
-        assert BEAD_COMMENT == z.comment.decode('utf-8')
+        comment = z.comment.decode('utf-8')
+        assert BEAD_COMMENT == comment
 
 
 def test_pack_stability_directory_name_data_and_timestamp_determines_content_ids(tmp_path_factory):
@@ -208,7 +214,9 @@ def test_load_makes_bead_files_available_under_input(load_workspace, tmp_path_fa
     """Test that loading a bead makes its files available under input."""
     _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
     
-    assert (load_workspace.directory / 'input/bead1/output1').read_bytes() == b'data for bead1'
+    input_file = load_workspace.directory / 'input/bead1/output1'
+    content = input_file.read_bytes()
+    assert content == b'data for bead1'
 
 
 def test_load_loaded_inputs_are_read_only(load_workspace, tmp_path_factory):
