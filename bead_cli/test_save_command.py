@@ -3,6 +3,7 @@ import pytest
 
 from bead.workspace import Workspace
 from bead.box import Box
+from .test_robot import Robot
 
 
 def test_invalid_workspace_causes_error(robot):
@@ -37,7 +38,7 @@ def test_symlink_is_resolved_on_save(robot, box):
 
 @pytest.fixture
 def robot_no_box():
-    with fixtures.Robot() as robot_instance:
+    with Robot() as robot_instance:
         yield robot_instance
 
 
@@ -60,7 +61,7 @@ def bead_count(box, kind=None):
 
 @pytest.fixture
 def robot_multi_box(tmp_path_factory):
-    with fixtures.Robot() as robot_instance:
+    with Robot() as robot_instance:
         yield robot_instance
 
 
