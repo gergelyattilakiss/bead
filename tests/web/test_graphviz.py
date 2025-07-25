@@ -1,7 +1,7 @@
 import shutil
 import subprocess
 
-from bead.test import skipUnless
+import pytest
 
 
 def _has_dot():
@@ -21,4 +21,4 @@ def needs_dot(f):
     """
     Decorator to skip tests requiring GraphViz's dot tool.
     """
-    return skipUnless(HAS_DOT, "Requires GraphViz's dot tool")(f)
+    return pytest.mark.skipif(not HAS_DOT, reason="Requires GraphViz's dot tool")(f)
