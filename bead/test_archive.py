@@ -37,8 +37,7 @@ def test_extract_file(bead_archive, temp_dir):
     bead.extract_file('path/to/file1', extracted_file)
     
     # then file1 has the expected content
-    with open(extracted_file, 'rb') as f:
-        assert b'''file1's known content''' == f.read()
+    assert extracted_file.read_bytes() == b'''file1's known content'''
 
 
 def test_extract_dir(bead_archive, temp_dir):
@@ -53,8 +52,7 @@ def test_extract_dir(bead_archive, temp_dir):
     assert {'file1', 'file2'} == set(os.listdir(extracted_dir))
     
     # then file1 has the expected content
-    with open(extracted_file, 'rb') as f:
-        assert b'''file1's known content''' == f.read()
+    assert extracted_file.read_bytes() == b'''file1's known content'''
 
 
 def test_extract_nonexistent_dir(bead_archive, temp_dir):
