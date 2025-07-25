@@ -3,7 +3,7 @@ import pytest
 
 from .test_robot import Robot
 
-from bead.tech.timestamp import timestamp
+from bead.tech.timestamp import timestamp as now_ts
 from bead.workspace import Workspace
 
 
@@ -13,17 +13,17 @@ def box(tmp_path_factory):
 
 
 @pytest.fixture
-def timestamp_fixture():
-    return timestamp()
+def timestamp():
+    return now_ts()
 
 
 @pytest.fixture
-def bead(tmp_path_factory, timestamp_fixture):
+def bead(tmp_path_factory, timestamp):
     tmp = tmp_path_factory.mktemp("bead_tmp")
     ws = Workspace(tmp / 'ws')
     ws.create('a bead kind')
     bead_archive = tmp / 'bead.zip'
-    ws.pack(bead_archive, timestamp_fixture, comment='bead for a shared box')
+    ws.pack(bead_archive, timestamp, comment='bead for a shared box')
     return bead_archive
 
 
