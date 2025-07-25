@@ -190,32 +190,31 @@ def load_workspace(temp_dir):
     return ws
 
 
-def _load_a_bead(workspace, input_nick, temp_dir_path):
+def _load_a_bead(workspace, input_nick, tmp_path_factory):
     """Helper function to load a bead into workspace."""
-    path_of_bead_to_load = temp_dir_path / f'{input_nick}.zip'
+    temp_dir = tmp_path_factory.mktemp(f"load_{input_nick}")
+    path_of_bead_to_load = temp_dir / f'{input_nick}.zip'
     make_bead(
         path_of_bead_to_load,
         {
             'output/output1':
             f'data for {input_nick}'.encode('utf-8')
         },
-        temp_dir_path
+        temp_dir
     )
     workspace.load(input_nick, Archive(path_of_bead_to_load))
 
 
 def test_load_makes_bead_files_available_under_input(load_workspace, tmp_path_factory):
     """Test that loading a bead makes its files available under input."""
-    temp_dir = tmp_path_factory.mktemp("load_test")
-    _load_a_bead(load_workspace, 'bead1', temp_dir)
+    _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
     
     assert (load_workspace.directory / 'input/bead1/output1').read_bytes() == b'data for bead1'
 
 
 def test_load_loaded_inputs_are_read_only(load_workspace, tmp_path_factory):
     """Test that loaded input files are read-only."""
-    temp_dir = tmp_path_factory.mktemp("readonly_test")
-    _load_a_bead(load_workspace, 'bead1', temp_dir)
+    _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
     
     root = load_workspace.directory / 'input/bead1'
     assert os.path.exists(root)
@@ -229,8 +228,7 @@ def test_load_loaded_inputs_are_read_only(load_workspace, tmp_path_factory):
 
 def test_load_adds_input_to_bead_meta(load_workspace, tmp_path_factory):
     """Test that loading adds input info to bead meta."""
-    temp_dir = tmp_path_factory.mktemp("meta_test")
-    _load_a_bead(load_workspace, 'bead1', temp_dir)
+    _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
     
     assert load_workspace.has_input('bead1')
     assert load_workspace.is_loaded('bead1')
@@ -238,10 +236,8 @@ def test_load_adds_input_to_bead_meta(load_workspace, tmp_path_factory):
 
 def test_load_loading_more_than_one_bead(load_workspace, tmp_path_factory):
     """Test that multiple beads can be loaded."""
-    temp_dir1 = tmp_path_factory.mktemp("multi_load_test1")
-    temp_dir2 = tmp_path_factory.mktemp("multi_load_test2")
-    _load_a_bead(load_workspace, 'bead1', temp_dir1)
-    _load_a_bead(load_workspace, 'bead2', temp_dir2)
+    _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
+    _load_a_bead(load_workspace, 'bead2', tmp_path_factory)
     
     assert load_workspace.has_input('bead1')
     assert load_workspace.has_input('bead2')
