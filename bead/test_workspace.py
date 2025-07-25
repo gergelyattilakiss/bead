@@ -172,9 +172,10 @@ def test_pack_stability_directory_name_data_and_timestamp_determines_content_ids
     assert bead1.content_id == bead2.content_id
 
 
-def make_bead(path, filespecs, temp_dir_path):
+def make_bead(path, filespecs, tmp_path_factory):
     """Helper function to create a bead with specified files."""
-    workspace = m.Workspace(temp_dir_path / 'workspace')
+    temp_dir = tmp_path_factory.mktemp("make_bead")
+    workspace = m.Workspace(temp_dir / 'workspace')
     workspace.create(A_KIND)
     for filename, content in filespecs.items():
         write_file(workspace.directory / filename, content)
@@ -200,7 +201,7 @@ def _load_a_bead(workspace, input_nick, tmp_path_factory):
             'output/output1':
             f'data for {input_nick}'.encode('utf-8')
         },
-        temp_dir
+        tmp_path_factory
     )
     workspace.load(input_nick, Archive(path_of_bead_to_load))
 
