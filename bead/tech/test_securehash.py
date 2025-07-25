@@ -9,12 +9,12 @@ def test_file_hash(tmp_path):
     # given a file
     file_path = tmp_path / 'file'
     file_path.write_bytes(b'with some content')
-    
+
     # when file is hashed
     file_size = file_path.stat().st_size
     with file_path.open('rb') as f:
         hashresult = securehash.file(f, file_size)
-    
+
     # then result is an ascii string of more than 32 chars
     hashresult.encode('ascii')
     is_string = isinstance(hashresult, str)
@@ -27,10 +27,10 @@ def test_bytes_hash():
     """Test hashing bytes."""
     # given some bytes
     some_bytes = b'some bytes'
-    
+
     # when bytes are hashed
     hashresult = securehash.bytes(some_bytes)
-    
+
     # then result is an ascii string of more than 32 chars
     hashresult.encode('ascii')
     is_string = isinstance(hashresult, str)
@@ -45,12 +45,12 @@ def test_bytes_and_file_compatibility(tmp_path):
     some_bytes = b'some bytes'
     file_path = tmp_path / 'file'
     file_path.write_bytes(some_bytes)
-    
+
     # when file and bytes are hashed
     bytes_hash = securehash.bytes(some_bytes)
     file_size = file_path.stat().st_size
     with file_path.open('rb') as f:
         file_hash = securehash.file(f, file_size)
-    
+
     # then the hashes are the same
     assert bytes_hash == file_hash

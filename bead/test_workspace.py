@@ -125,7 +125,7 @@ def test_pack_archives_all_content(packed_archive):
         output1_content = z.read(f'{layout.DATA}/output1')
         source1_content = z.read(f'{layout.CODE}/source1')
         source2_content = z.read(f'{layout.CODE}/subdir/source2')
-        
+
         assert OUTPUT1 == output1_content
         assert SOURCE1 == source1_content
         assert SOURCE2 == source2_content
@@ -213,7 +213,7 @@ def _load_a_bead(workspace, input_nick, tmp_path_factory):
 def test_load_makes_bead_files_available_under_input(load_workspace, tmp_path_factory):
     """Test that loading a bead makes its files available under input."""
     _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
-    
+
     input_file = load_workspace.directory / 'input/bead1/output1'
     content = input_file.read_bytes()
     assert content == b'data for bead1'
@@ -222,7 +222,7 @@ def test_load_makes_bead_files_available_under_input(load_workspace, tmp_path_fa
 def test_load_loaded_inputs_are_read_only(load_workspace, tmp_path_factory):
     """Test that loaded input files are read-only."""
     _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
-    
+
     root = load_workspace.directory / 'input/bead1'
     assert root.exists()
     with pytest.raises(IOError):
@@ -236,7 +236,7 @@ def test_load_loaded_inputs_are_read_only(load_workspace, tmp_path_factory):
 def test_load_adds_input_to_bead_meta(load_workspace, tmp_path_factory):
     """Test that loading adds input info to bead meta."""
     _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
-    
+
     assert load_workspace.has_input('bead1')
     assert load_workspace.is_loaded('bead1')
 
@@ -245,7 +245,7 @@ def test_load_loading_more_than_one_bead(load_workspace, tmp_path_factory):
     """Test that multiple beads can be loaded."""
     _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
     _load_a_bead(load_workspace, 'bead2', tmp_path_factory)
-    
+
     assert load_workspace.has_input('bead1')
     assert load_workspace.has_input('bead2')
 

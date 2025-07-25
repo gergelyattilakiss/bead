@@ -9,10 +9,10 @@ def test_make_readonly_file(tmp_path):
     # given a file
     file_path = tmp_path / 'file'
     file_path.write_bytes(b'')
-    
+
     # when made readonly
     m.make_readonly(file_path)
-    
+
     # then file can not be written
     with pytest.raises(IOError):
         open(file_path, 'wb')
@@ -28,10 +28,10 @@ def test_make_readonly_directory(tmp_path):
     """Test making a directory read-only."""
     # given a directory
     dir_path = tmp_path
-    
+
     # when made readonly
     m.make_readonly(dir_path)
-    
+
     # then can not create file under directory
     with pytest.raises(IOError):
         open(dir_path / 'file', 'wb')
@@ -43,10 +43,10 @@ def test_make_writable_file(tmp_path):
     file_path = tmp_path / 'file'
     file_path.write_bytes(b'')
     m.make_readonly(file_path)
-    
+
     # when made writable
     m.make_writable(file_path)
-    
+
     # then file can be written
     with open(file_path, 'ab') as f:
         f.write(b'little something')
@@ -57,10 +57,10 @@ def test_make_writable_directory(tmp_path):
     # given a read only directory
     dir_path = tmp_path
     m.make_readonly(dir_path)
-    
+
     # when made writable
     m.make_writable(dir_path)
-    
+
     # then file can be created under directory
     (dir_path / 'file').write_bytes(b'little something')
 
@@ -69,7 +69,7 @@ def test_all_subpaths(tmp_path):
     """Test collecting all subpaths from a directory structure."""
     DIRS = ('a', 'b', 'c', 'c/d')
     FILES = ('a/f', 'c/d/f1', 'c/d/f2')
-    
+
     # given some directory structure with files
     root = tmp_path
     for dir in DIRS:
@@ -78,10 +78,10 @@ def test_all_subpaths(tmp_path):
     for f in FILES:
         file_path = root / f
         m.write_file(file_path, '')
-    
+
     # when all paths are collected
     paths = set(m.all_subpaths(root))
-    
+
     # then all paths are found
     dir_paths = set(root / d for d in DIRS)
     file_paths = set(root / f for f in FILES)

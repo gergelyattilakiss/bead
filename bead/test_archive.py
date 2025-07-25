@@ -35,7 +35,7 @@ def test_extract_file(bead_archive, temp_dir):
     extracted_file = temp_dir / 'extracted_file'
     bead = m.Archive(bead_archive)
     bead.extract_file('path/to/file1', extracted_file)
-    
+
     # then file1 has the expected content
     content = extracted_file.read_bytes()
     assert content == b'''file1's known content'''
@@ -48,11 +48,11 @@ def test_extract_dir(bead_archive, temp_dir):
     bead = m.Archive(bead_archive)
     bead.extract_dir('path/to', extracted_dir)
     extracted_file = extracted_dir / 'file1'
-    
+
     # then directory has the expected files
     files = set(os.listdir(extracted_dir))
     assert {'file1', 'file2'} == files
-    
+
     # then file1 has the expected content
     content = extracted_file.read_bytes()
     assert content == b'''file1's known content'''
@@ -64,7 +64,7 @@ def test_extract_nonexistent_dir(bead_archive, temp_dir):
     extracted_dir = temp_dir / 'destination dir'
     bead = m.Archive(bead_archive)
     bead.extract_dir('path/to/nonexistent', extracted_dir)
-    
+
     # then an empty directory is created
     is_dir = os.path.isdir(extracted_dir)
     files = os.listdir(extracted_dir)
@@ -77,6 +77,6 @@ def test_content_id(bead_archive):
     # when content_id is checked
     bead = m.Archive(bead_archive)
     content_id = bead.content_id
-    
+
     # then content_id is a string
     assert isinstance(content_id, str)

@@ -38,10 +38,10 @@ def times():
 
 class CheckAssertions:
     """Helper class for test assertions."""
-    
+
     def __init__(self, robot):
         self.robot = robot
-    
+
     def loaded(self, input_nick, readme_content):
         """
         Fail if an incorrect bead was loaded.
@@ -53,7 +53,7 @@ class CheckAssertions:
         assert readme_path.exists(), f"README file not found at {readme_path}"
         content = readme_path.read_text()
         assert readme_content in content, f"Expected '{readme_content}' in README content: {content}"
-    
+
     def not_loaded(self, input_nick):
         readme_path = self.robot.cwd / f'input/{input_nick}/README'
         assert not readme_path.exists(), f"README file should not exist at {readme_path}"

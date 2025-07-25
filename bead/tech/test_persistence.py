@@ -17,11 +17,11 @@ def test_streams(tmp_path):
     original_structure = get_structure()
     serialized = m.dumps(original_structure)
     file_path.write_text(serialized)
-    
+
     # when file is read back
     file_content = file_path.read_text()
     structure = m.loads(file_content)
-    
+
     # then it equals the original structure
     assert original_structure == structure
 
@@ -31,9 +31,9 @@ def test_strings():
     # given a persisted structure as a string
     original_structure = get_structure()
     string = m.dumps(original_structure)
-    
+
     # when string is parsed back
     structure = m.loads(string)
-    
+
     # then it equals the original structure
     assert original_structure == structure

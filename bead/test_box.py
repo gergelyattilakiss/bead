@@ -28,8 +28,6 @@ def timestamp():
     return time_from_user('20160704T162800000000+0200')
 
 
-
-
 def test_all_beads(box):
     """Test that all beads are returned."""
     bead_names = set(b.name for b in box.all_beads())
@@ -80,10 +78,10 @@ def test_box_methods_tolerate_junk_in_box(tmp_path_factory):
     add_bead('bead1', 'test-bead1', '20160704T000000000000+0200')
     add_bead('bead2', 'test-bead2', '20160704T162800000000+0200')
     add_bead('BEAD3', 'test-bead3', '20160704T162800000001+0200')
-    
+
     # add junk
     junk_file = box.directory / 'some-non-bead-file'
     write_file(junk_file, 'random bits')
-    
+
     bead_names = set(b.name for b in box.all_beads())
     assert set(['bead1', 'bead2', 'BEAD3']) == bead_names
