@@ -1,68 +1,52 @@
 import os
-
-from ..test import TestCase
+import pytest
 from .. import tech
 
 securehash = tech.securehash
 write_file = tech.fs.write_file
 
 
-class Test(TestCase):
+def test_file_hash(tmp_path):
+    """Test hashing a file."""
+    # given a file
+    file_path = tmp_path / 'file'
+    write_file(file_path, b'with some content')
+    
+    # when file is hashed
+    with open(file_path, 'rb') as f:
+        hashresult = securehash.file(f, os.path.getsize(file_path))
+    
+    # then result is an ascii string of more than 32 chars
+    hashresult.encode('ascii')
+    assert isinstance(hashresult, str)
+    assert len(hashresult) > 32
 
-    def test_file(self):
-        self.given_a_file()
-        self.when_file_is_hashed()
-        self.then_result_is_an_ascii_string_of_more_than_32_chars()
 
-    def test_bytes(self):
-        self.given_some_bytes()
-        self.when_bytes_are_hashed()
-        self.then_result_is_an_ascii_string_of_more_than_32_chars()
+def test_bytes_hash():
+    """Test hashing bytes."""
+    # given some bytes
+    some_bytes = b'some bytes'
+    
+    # when bytes are hashed
+    hashresult = securehash.bytes(some_bytes)
+    
+    # then result is an ascii string of more than 32 chars
+    hashresult.encode('ascii')
+    assert isinstance(hashresult, str)
+    assert len(hashresult) > 32
 
-    def test_bytes_and_file_is_compatible(self):
-        self.given_some_bytes_and_file_with_those_bytes()
-        self.when_file_and_bytes_are_hashed()
-        self.then_the_hashes_are_the_same()
 
-    # implementation
-
-    __file = None
-    __hashresult = None
-    __hashresults = (None, None)
-    __some_bytes = None
-
-    def given_a_file(self):
-        self.__file = self.new_temp_dir() / 'file'
-        write_file(self.__file, b'with some content')
-
-    def given_some_bytes(self):
-        self.__some_bytes = b'some bytes'
-
-    def given_some_bytes_and_file_with_those_bytes(self):
-        self.__some_bytes = b'some bytes'
-        self.__file = self.new_temp_dir() / 'file'
-        write_file(self.__file, self.__some_bytes)
-
-    def when_bytes_are_hashed(self):
-        self.__hashresult = securehash.bytes(self.__some_bytes)
-
-    def when_file_is_hashed(self):
-        with open(self.__file, 'rb') as f:
-            self.__hashresult = (
-                securehash.file(f, os.path.getsize(self.__file))
-            )
-
-    def when_file_and_bytes_are_hashed(self):
-        with open(self.__file, 'rb') as f:
-            self.__hashresults = (
-                securehash.bytes(self.__some_bytes),
-                securehash.file(f, os.path.getsize(self.__file))
-            )
-
-    def then_result_is_an_ascii_string_of_more_than_32_chars(self):
-        self.__hashresult.encode('ascii')
-        assert isinstance(self.__hashresult, str)
-        assert len(self.__hashresult) > 32
-
-    def then_the_hashes_are_the_same(self):
-        assert self.__hashresults[0] == self.__hashresults[1]
+def test_bytes_and_file_compatibility(tmp_path):
+    """Test that bytes and file hashing are compatible."""
+    # given some bytes and file with those bytes
+    some_bytes = b'some bytes'
+    file_path = tmp_path / 'file'
+    write_file(file_path, some_bytes)
+    
+    # when file and bytes are hashed
+    bytes_hash = securehash.bytes(some_bytes)
+    with open(file_path, 'rb') as f:
+        file_hash = securehash.file(f, os.path.getsize(file_path))
+    
+    # then the hashes are the same
+    assert bytes_hash == file_hash

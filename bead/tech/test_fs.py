@@ -1,123 +1,96 @@
 # coding: utf-8
-from ..test import TestCase, skipIf
+import os
+import pytest
 from . import fs as m
 
-import os
+
+def test_make_readonly_file(tmp_path):
+    """Test making a file read-only."""
+    # given a file
+    file_path = tmp_path / 'file'
+    with open(file_path, 'wb'):
+        pass
+    
+    # when made readonly
+    m.make_readonly(file_path)
+    
+    # then file can not be written
+    with pytest.raises(IOError):
+        open(file_path, 'wb')
 
 
-class Test_make_readonly(TestCase):
-
-    def test_file(self):
-        self.given_a_file()
-        self.when_made_readonly()
-        self.then_file_can_not_be_written()
-
-    @skipIf(os.name != 'posix', 'read only folders do not work e.g. on Windows')
-    # According to https://support.microsoft.com/EN-US/help/256614
-    # "Unlike the Read-only attribute for a file, the Read-only attribute
-    # for a folder is typically ignored by Windows, Windows components and
-    # accessories, and other programs. For example, you can delete, rename,
-    # and change a folder with the Read-only attribute by using Windows Explorer."
-    def test_directory(self):
-        self.given_a_directory()
-        self.when_made_readonly()
-        self.then_can_not_creat_file_under_directory()
-
-    # implementation
-
-    __path: m.Path
-
-    def given_a_file(self):
-        self.__path = self.new_temp_dir() / 'file'
-        with open(self.__path, 'wb'):
-            pass
-
-    def given_a_directory(self):
-        self.__path = self.new_temp_dir()
-
-    def when_made_readonly(self):
-        m.make_readonly(self.__path)
-
-    def then_file_can_not_be_written(self):
-        self.assertRaises(IOError, open, self.__path, 'wb')
-
-    def then_can_not_creat_file_under_directory(self):
-        self.assertRaises(IOError, open, self.__path / 'file', 'wb')
+@pytest.mark.skipif(os.name != 'posix', reason='read only folders do not work e.g. on Windows')
+# According to https://support.microsoft.com/EN-US/help/256614
+# "Unlike the Read-only attribute for a file, the Read-only attribute
+# for a folder is typically ignored by Windows, Windows components and
+# accessories, and other programs. For example, you can delete, rename,
+# and change a folder with the Read-only attribute by using Windows Explorer."
+def test_make_readonly_directory(tmp_path):
+    """Test making a directory read-only."""
+    # given a directory
+    dir_path = tmp_path
+    
+    # when made readonly
+    m.make_readonly(dir_path)
+    
+    # then can not create file under directory
+    with pytest.raises(IOError):
+        open(dir_path / 'file', 'wb')
 
 
-class Test_make_writable(TestCase):
-
-    def test_file(self):
-        self.given_a_read_only_file()
-        self.when_made_writable()
-        self.then_file_can_be_written()
-
-    def test_directory(self):
-        self.given_a_read_only_directory()
-        self.when_made_writable()
-        self.then_file_can_be_created_under_directory()
-
-    # implementation
-
-    __path: m.Path
-
-    def given_a_read_only_file(self):
-        self.__path = self.new_temp_dir() / 'file'
-        with open(self.__path, 'wb'):
-            pass
-        m.make_readonly(self.__path)
-
-    def given_a_read_only_directory(self):
-        self.__path = self.new_temp_dir()
-        m.make_readonly(self.__path)
-
-    def when_made_writable(self):
-        m.make_writable(self.__path)
-
-    def then_file_can_be_written(self):
-        with open(self.__path, 'ab') as f:
-            f.write(b'little something')
-
-    def then_file_can_be_created_under_directory(self):
-        with open(self.__path / 'file', 'wb') as f:
-            f.write(b'little something')
+def test_make_writable_file(tmp_path):
+    """Test making a read-only file writable."""
+    # given a read only file
+    file_path = tmp_path / 'file'
+    with open(file_path, 'wb'):
+        pass
+    m.make_readonly(file_path)
+    
+    # when made writable
+    m.make_writable(file_path)
+    
+    # then file can be written
+    with open(file_path, 'ab') as f:
+        f.write(b'little something')
 
 
-class Test_all_subpaths(TestCase):
+def test_make_writable_directory(tmp_path):
+    """Test making a read-only directory writable."""
+    # given a read only directory
+    dir_path = tmp_path
+    m.make_readonly(dir_path)
+    
+    # when made writable
+    m.make_writable(dir_path)
+    
+    # then file can be created under directory
+    with open(dir_path / 'file', 'wb') as f:
+        f.write(b'little something')
 
-    def test(self):
-        self.given_some_directory_structure_with_files()
-        self.when_all_paths_are_collected()
-        self.then_all_paths_are_found()
 
-    # implementation
-
-    __root: m.Path
-    __paths: set[m.Path]
+def test_all_subpaths(tmp_path):
+    """Test collecting all subpaths from a directory structure."""
     DIRS = ('a', 'b', 'c', 'c/d')
     FILES = ('a/f', 'c/d/f1', 'c/d/f2')
+    
+    # given some directory structure with files
+    root = tmp_path
+    for dir in DIRS:
+        os.makedirs(root / dir)
+    for f in FILES:
+        m.write_file(root / f, '')
+    
+    # when all paths are collected
+    paths = set(m.all_subpaths(root))
+    
+    # then all paths are found
+    all_paths = {root} | set(root / d for d in DIRS) | set(root / f for f in FILES)
+    assert all_paths == paths
 
-    def given_some_directory_structure_with_files(self):
-        self.__root = root = self.new_temp_dir()
-        for dir in self.DIRS:
-            os.makedirs(root / dir)
-        for f in self.FILES:
-            m.write_file(root / f, '')
 
-    def when_all_paths_are_collected(self):
-        self.__paths = set(m.all_subpaths(self.__root))
-
-    def then_all_paths_are_found(self):
-        root = self.__root
-        all_paths = {root} | set(root / d for d in self.DIRS) | set(root / f for f in self.FILES)
-        assert all_paths == self.__paths
-
-
-class Test_read_write_file(TestCase):
-
-    def test(self):
-        root = self.new_temp_dir()
-        testfile = root / 'testfile'
-        content = u'Test_read_write_file testfile content / áíőóüú@!#@!#$$@'
-        m.write_file(testfile, content)
-        assert content == m.read_file(testfile)
+def test_read_write_file(tmp_path):
+    """Test reading and writing files."""
+    testfile = tmp_path / 'testfile'
+    content = u'Test_read_write_file testfile content / áíőóüú@!#@!#$$@'
+    m.write_file(testfile, content)
+    assert content == m.read_file(testfile)
