@@ -212,8 +212,9 @@ def test_load_makes_bead_files_available_under_input(load_workspace, tmp_path_fa
     assert (load_workspace.directory / 'input/bead1/output1').read_bytes() == b'data for bead1'
 
 
-def test_load_loaded_inputs_are_read_only(load_workspace, temp_dir):
+def test_load_loaded_inputs_are_read_only(load_workspace, tmp_path_factory):
     """Test that loaded input files are read-only."""
+    temp_dir = tmp_path_factory.mktemp("readonly_test")
     _load_a_bead(load_workspace, 'bead1', temp_dir)
     
     root = load_workspace.directory / 'input/bead1'
@@ -226,16 +227,18 @@ def test_load_loaded_inputs_are_read_only(load_workspace, temp_dir):
             open(root / 'new-file', 'wb')
 
 
-def test_load_adds_input_to_bead_meta(load_workspace, temp_dir):
+def test_load_adds_input_to_bead_meta(load_workspace, tmp_path_factory):
     """Test that loading adds input info to bead meta."""
+    temp_dir = tmp_path_factory.mktemp("meta_test")
     _load_a_bead(load_workspace, 'bead1', temp_dir)
     
     assert load_workspace.has_input('bead1')
     assert load_workspace.is_loaded('bead1')
 
 
-def test_load_loading_more_than_one_bead(load_workspace, temp_dir):
+def test_load_loading_more_than_one_bead(load_workspace, tmp_path_factory):
     """Test that multiple beads can be loaded."""
+    temp_dir = tmp_path_factory.mktemp("multi_load_test")
     _load_a_bead(load_workspace, 'bead1', temp_dir)
     _load_a_bead(load_workspace, 'bead2', temp_dir)
     
