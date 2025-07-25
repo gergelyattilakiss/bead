@@ -238,9 +238,10 @@ def test_load_adds_input_to_bead_meta(load_workspace, tmp_path_factory):
 
 def test_load_loading_more_than_one_bead(load_workspace, tmp_path_factory):
     """Test that multiple beads can be loaded."""
-    temp_dir = tmp_path_factory.mktemp("multi_load_test")
-    _load_a_bead(load_workspace, 'bead1', temp_dir)
-    _load_a_bead(load_workspace, 'bead2', temp_dir)
+    temp_dir1 = tmp_path_factory.mktemp("multi_load_test1")
+    temp_dir2 = tmp_path_factory.mktemp("multi_load_test2")
+    _load_a_bead(load_workspace, 'bead1', temp_dir1)
+    _load_a_bead(load_workspace, 'bead2', temp_dir2)
     
     assert load_workspace.has_input('bead1')
     assert load_workspace.has_input('bead2')
