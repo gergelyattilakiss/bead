@@ -96,19 +96,6 @@ def CaptureStderr():
     return _CaptureStream(contextlib.redirect_stderr)
 
 
-class CheckAssertions:
-    """Helper class providing assertion methods for tests."""
-    
-    def file_contains(self, filename, content_fragment):
-        assert content_fragment in pathlib.Path(filename).read_text()
-
-    def file_exists(self, filename):
-        assert os.path.exists(filename)
-
-    def file_does_not_exists(self, filename):
-        assert not os.path.exists(filename)
-
-
 @pytest.fixture
 def temp_dir():
     """Provide a temporary directory that gets cleaned up after the test."""
@@ -128,9 +115,3 @@ def capture_stderr():
     """Capture stderr during test execution."""
     with CaptureStderr() as capture:
         yield capture
-
-
-@pytest.fixture
-def check():
-    """Provide assertion helper methods."""
-    return CheckAssertions()
