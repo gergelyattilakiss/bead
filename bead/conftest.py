@@ -96,13 +96,6 @@ def CaptureStderr():
 
 
 @pytest.fixture
-def temp_dir():
-    """Provide a temporary directory that gets cleaned up after the test."""
-    with TempDir() as td:
-        yield td.path
-
-
-@pytest.fixture
 def capture_stdout():
     """Capture stdout during test execution."""
     with CaptureStdout() as capture:

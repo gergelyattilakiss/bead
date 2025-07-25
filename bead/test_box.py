@@ -7,12 +7,13 @@ from . import spec as bead_spec
 
 
 @pytest.fixture
-def box(temp_dir):
+def box(tmp_path_factory):
     """Create a test box with sample beads."""
-    box = Box('test', temp_dir)
+    tmp_path = tmp_path_factory.mktemp('box')
+    box = Box('test', tmp_path)
 
     def add_bead(name, kind, freeze_time):
-        ws = Workspace(temp_dir / name)
+        ws = Workspace(tmp_path / name)
         ws.create(kind)
         box.store(ws, freeze_time)
 

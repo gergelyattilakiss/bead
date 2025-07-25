@@ -19,9 +19,9 @@ A_KIND = 'an arbitrary identifier that is not used by chance'
 
 
 @pytest.fixture
-def workspace_dir(temp_dir):
+def workspace_dir(tmp_path_factory):
     """Provide a workspace directory."""
-    return temp_dir / 'new_workspace'
+    return tmp_path_factory.mktemp('workspaces') / 'new_workspace'
 
 
 def test_create_valid(workspace_dir):
@@ -47,16 +47,16 @@ def test_create_of_specified_kind(workspace_dir):
     assert A_KIND == workspace.kind
 
 
-def test_for_current_working_directory_non_workspace(temp_dir, monkeypatch):
+def test_for_current_working_directory_non_workspace(tmp_path, monkeypatch):
     """Test workspace detection in non-workspace directory."""
-    monkeypatch.chdir(temp_dir)
+    monkeypatch.chdir(tmp_path)
     ws = m.Workspace.for_current_working_directory()
-    assert temp_dir.resolve() == ws.directory
+    assert tmp_path.resolve() == ws.directory
 
 
-def test_for_current_working_directory_workspace_root(temp_dir, monkeypatch):
+def test_for_current_working_directory_workspace_root(tmp_path, monkeypatch):
     """Test workspace detection from workspace root."""
-    root = temp_dir / 'new_workspace'
+    root = tmp_path / 'new_workspace'
     workspace = m.Workspace(root)
     workspace.create(A_KIND)
     monkeypatch.chdir(root)
@@ -64,9 +64,9 @@ def test_for_current_working_directory_workspace_root(temp_dir, monkeypatch):
     assert root.resolve() == ws.directory
 
 
-def test_for_current_working_directory_above_root(temp_dir, monkeypatch):
+def test_for_current_working_directory_above_root(tmp_path, monkeypatch):
     """Test workspace detection from subdirectory."""
-    root = temp_dir / 'new_workspace'
+    root = tmp_path / 'new_workspace'
     workspace = m.Workspace(root)
     workspace.create(A_KIND)
     monkeypatch.chdir(root / layouts.Workspace.INPUT)
@@ -82,9 +82,9 @@ BEAD_COMMENT = 'custom bead comment'
 
 
 @pytest.fixture
-def pack_workspace(temp_dir):
+def pack_workspace(tmp_path_factory):
     """Create a workspace with test files for packing."""
-    workspace_dir = temp_dir / 'workspace'
+    workspace_dir = tmp_path_factory.mktemp('root') / 'workspace'
     ws = m.Workspace(workspace_dir)
     ws.create(A_KIND)
     layout = layouts.Workspace
@@ -102,9 +102,9 @@ def pack_workspace(temp_dir):
 
 
 @pytest.fixture
-def packed_archive(pack_workspace, temp_dir):
+def packed_archive(pack_workspace, tmp_path_factory):
     """Create a packed archive from the workspace."""
-    zipfile_path = temp_dir / 'bead.zip'
+    zipfile_path = tmp_path_factory.mktemp('dir') / 'bead.zip'
     pack_workspace.pack(zipfile_path, timestamp(), BEAD_COMMENT)
     return zipfile_path
 
@@ -186,9 +186,9 @@ def make_bead(path, filespecs, tmp_path_factory):
 
 
 @pytest.fixture
-def load_workspace(temp_dir):
+def load_workspace(tmp_path_factory):
     """Create a workspace for loading tests."""
-    workspace_dir = temp_dir / 'workspace'
+    workspace_dir = tmp_path_factory.mktemp('workspaces') / 'workspace'
     ws = m.Workspace(workspace_dir)
     ws.create(A_KIND)
     return ws
@@ -256,9 +256,9 @@ def input_nick():
 
 
 @pytest.fixture
-def workspace_with_input(temp_dir, input_nick):
+def workspace_with_input(tmp_path_factory, input_nick):
     """Create a workspace with an input."""
-    workspace_dir = temp_dir / 'workspace'
+    workspace_dir = tmp_path_factory.mktemp('workspaces') / 'workspace'
     ws = m.Workspace(workspace_dir)
     ws.create(A_KIND)
     ws.add_input(input_nick, A_KIND, 'content_id', timestamp())
@@ -321,9 +321,9 @@ def zip_up(directory, archive_path):
 
 
 @pytest.fixture
-def validation_workspace(temp_dir):
+def validation_workspace(tmp_path_factory):
     """Create a workspace for validation tests."""
-    workspace = m.Workspace(temp_dir / 'workspace')
+    workspace = m.Workspace(tmp_path_factory.mktemp('workspaces') / 'workspace')
     workspace.create(A_KIND)
     return workspace
 
@@ -335,27 +335,27 @@ def validation_timestamp():
 
 
 @pytest.fixture
-def archive_path(validation_workspace, validation_timestamp, temp_dir):
+def archive_path(validation_workspace, validation_timestamp, tmp_path_factory):
     """Create an archive path."""
-    archive_path = temp_dir / 'bead.zip'
+    archive_path = tmp_path_factory.mktemp('archives') / 'bead.zip'
     validation_workspace.pack(archive_path, validation_timestamp, comment=archive_path.as_posix())
     return archive_path
 
 
 @pytest.fixture
-def archive_with_two_files_path(validation_workspace, validation_timestamp, temp_dir):
+def archive_with_two_files_path(validation_workspace, validation_timestamp, tmp_path_factory):
     """Create an archive with two files."""
     write_file(validation_workspace.directory / 'code1', 'code1')
     write_file(validation_workspace.directory / 'output/data1', 'data1')
-    archive_path = temp_dir / 'bead.zip'
+    archive_path = tmp_path_factory.mktemp('archives') / 'bead.zip'
     validation_workspace.pack(archive_path, validation_timestamp, comment=archive_path.as_posix())
     return archive_path
 
 
 @pytest.fixture
-def unzipped_archive_path(archive_with_two_files_path, temp_dir):
+def unzipped_archive_path(archive_with_two_files_path, tmp_path_factory):
     """Create an unzipped archive directory."""
-    path = temp_dir / 'unzipped'
+    path = tmp_path_factory.mktemp('unzipped') / 'unzipped'
     unzip(archive_with_two_files_path, path)
     return path
 
@@ -383,28 +383,28 @@ def test_adding_a_code_file_to_an_archive_makes_bead_invalid(archive_path):
         Archive(archive_path).validate()
 
 
-def test_unzipping_and_zipping_an_archive_remains_valid(unzipped_archive_path, temp_dir):
+def test_unzipping_and_zipping_an_archive_remains_valid(unzipped_archive_path, tmp_path):
     """Test that unzipping and rezipping keeps the archive valid."""
-    rezipped_archive_path = temp_dir / 'rezipped_archive.zip'
+    rezipped_archive_path = tmp_path / 'rezipped_archive.zip'
     zip_up(unzipped_archive_path, rezipped_archive_path)
 
     Archive(rezipped_archive_path).validate()
 
 
-def test_deleting_a_file_in_the_manifest_makes_the_bead_invalid(unzipped_archive_path, temp_dir):
+def test_deleting_a_file_in_the_manifest_makes_the_bead_invalid(unzipped_archive_path, tmp_path):
     """Test that deleting a file from the manifest makes the bead invalid."""
     os.remove(unzipped_archive_path / layouts.Archive.CODE / 'code1')
-    modified_archive_path = temp_dir / 'modified_archive.zip'
+    modified_archive_path = tmp_path / 'modified_archive.zip'
     zip_up(unzipped_archive_path, modified_archive_path)
 
     with pytest.raises(InvalidArchive):
         Archive(modified_archive_path).validate()
 
 
-def test_changing_a_file_makes_the_bead_invalid(unzipped_archive_path, temp_dir):
+def test_changing_a_file_makes_the_bead_invalid(unzipped_archive_path, tmp_path):
     """Test that changing a file makes the bead invalid."""
     write_file(unzipped_archive_path / layouts.Archive.CODE / 'code1', b'HACKED')
-    modified_archive_path = temp_dir / 'modified_archive.zip'
+    modified_archive_path = tmp_path / 'modified_archive.zip'
     zip_up(unzipped_archive_path, modified_archive_path)
 
     with pytest.raises(InvalidArchive):

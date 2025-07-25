@@ -7,9 +7,9 @@ from . import layouts
 
 
 @pytest.fixture
-def bead_archive(temp_dir):
+def bead_archive(tmp_path_factory):
     """Create a test bead archive with sample files."""
-    bead_path = temp_dir / 'bead.zip'
+    bead_path = tmp_path_factory.mktemp('bead_archive') / 'bead.zip'
     with zipfile.ZipFile(bead_path, 'w') as z:
         z.writestr(
             layouts.Archive.BEAD_META,
@@ -29,10 +29,10 @@ def bead_archive(temp_dir):
     return bead_path
 
 
-def test_extract_file(bead_archive, temp_dir):
+def test_extract_file(bead_archive, tmp_path):
     """Test extracting a single file from the archive."""
     # when file1 is extracted
-    extracted_file = temp_dir / 'extracted_file'
+    extracted_file = tmp_path / 'extracted_file'
     bead = m.Archive(bead_archive)
     bead.extract_file('path/to/file1', extracted_file)
 
@@ -41,10 +41,10 @@ def test_extract_file(bead_archive, temp_dir):
     assert content == b'''file1's known content'''
 
 
-def test_extract_dir(bead_archive, temp_dir):
+def test_extract_dir(bead_archive, tmp_path):
     """Test extracting a directory from the archive."""
     # when a directory is extracted
-    extracted_dir = temp_dir / 'destination dir'
+    extracted_dir = tmp_path / 'destination dir'
     bead = m.Archive(bead_archive)
     bead.extract_dir('path/to', extracted_dir)
     extracted_file = extracted_dir / 'file1'
@@ -58,10 +58,10 @@ def test_extract_dir(bead_archive, temp_dir):
     assert content == b'''file1's known content'''
 
 
-def test_extract_nonexistent_dir(bead_archive, temp_dir):
+def test_extract_nonexistent_dir(bead_archive, tmp_path):
     """Test extracting a non-existent directory creates an empty directory."""
     # when a nonexistent directory is extracted
-    extracted_dir = temp_dir / 'destination dir'
+    extracted_dir = tmp_path / 'destination dir'
     bead = m.Archive(bead_archive)
     bead.extract_dir('path/to/nonexistent', extracted_dir)
 
