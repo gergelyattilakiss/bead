@@ -1,23 +1,28 @@
 import os
-from bead.test import TestCase
+import pytest
 
 from .test_robot import Robot
 
 
-class Test_basic_command_line(TestCase):
+@pytest.fixture
+def robot():
+    with Robot() as robot_instance:
+        yield robot_instance
 
-    # fixtures
-    def robot(self):
-        return self.useFixture(Robot())
 
-    def cli(self, robot):
-        return robot.cli
+@pytest.fixture
+def cli(robot):
+    return robot.cli
 
-    def cwd(self, robot):
-        return robot.cwd
 
-    def test_new_fails_if_directory_exists(self, cli, cwd, robot):
-        os.makedirs(cwd / 'workspace')
-        self.assertRaises(SystemExit, cli, 'new workspace')
-        assert 'ERROR' in robot.stderr
-        assert 'workspace' not in robot.stdout
+@pytest.fixture
+def cwd(robot):
+    return robot.cwd
+
+
+def test_new_fails_if_directory_exists(cli, cwd, robot):
+    os.makedirs(cwd / 'workspace')
+    with pytest.raises(SystemExit):
+        cli('new', 'workspace')
+    assert 'ERROR' in robot.stderr
+    assert 'workspace' not in robot.stdout
