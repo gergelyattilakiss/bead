@@ -1,31 +1,31 @@
 import os
-from bead.test import TestCase
+import pytest
 
 from . import test_fixtures as fixtures
 
 
-class Test_zap(TestCase, fixtures.RobotAndBeads):
+def test_with_default_workspace(robot, bead_with_inputs):
+    robot.cli('develop', bead_with_inputs)
+    robot.cd(bead_with_inputs)
+    robot.cli('zap')
 
-    # tests
+    assert bead_with_inputs in robot.stdout
 
-    def test_with_default_workspace(self, robot, bead_with_inputs):
-        robot.cli('develop', bead_with_inputs)
-        robot.cd(bead_with_inputs)
+
+def test_with_explicit_workspace(robot, bead_with_inputs):
+    robot.cli('develop', bead_with_inputs)
+    robot.cli('zap', bead_with_inputs)
+
+    assert bead_with_inputs in robot.stdout
+
+
+def test_invalid_workspace(robot):
+    with pytest.raises(SystemExit):
         robot.cli('zap')
+    assert 'ERROR' in robot.stderr
 
-        assert bead_with_inputs in robot.stdout
 
-    def test_with_explicit_workspace(self, robot, bead_with_inputs):
-        robot.cli('develop', bead_with_inputs)
-        robot.cli('zap', bead_with_inputs)
-
-        assert bead_with_inputs in robot.stdout
-
-    def test_invalid_workspace(self, robot):
-        self.assertRaises(SystemExit, robot.cli, 'zap')
-        assert 'ERROR' in robot.stderr
-
-    def test_force_invalid_workspace(self, robot):
-        robot.cli('zap', '--force')
-        assert not os.path.exists(robot.cwd)
-        assert 'ERROR' not in robot.stderr
+def test_force_invalid_workspace(robot):
+    robot.cli('zap', '--force')
+    assert not os.path.exists(robot.cwd)
+    assert 'ERROR' not in robot.stderr
