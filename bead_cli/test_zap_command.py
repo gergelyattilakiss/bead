@@ -1,8 +1,6 @@
 import os
 import pytest
 
-from . import test_fixtures as fixtures
-
 
 def test_with_default_workspace(robot, bead_with_inputs):
     robot.cli('develop', bead_with_inputs)

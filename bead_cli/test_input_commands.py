@@ -1,16 +1,15 @@
 import os
 import pytest
 from bead.workspace import Workspace
-from . import test_fixtures as fixtures
 
 
-def test_basic_usage(robot, bead_with_history, check):
+def test_basic_usage(robot, bead_with_history, check, times):
     # nextbead with input1 as databead1
     robot.cli('new', 'nextbead')
     robot.cd('nextbead')
     # add version TS2
-    robot.cli('input', 'add', 'input1', 'bead_with_history', '--time', fixtures.TS2)
-    check.loaded('input1', fixtures.TS2)
+    robot.cli('input', 'add', 'input1', 'bead_with_history', '--time', times.TS2)
+    check.loaded('input1', times.TS2)
     robot.cli('save')
     robot.cd('..')
     robot.cli('zap', 'nextbead')
@@ -126,32 +125,32 @@ def test_update_with_hacked_bead_is_refused(robot, hacked_bead, bead_a, check):
     assert 'WARNING' in robot.stderr
 
 
-def test_update_to_next_version(robot, bead_with_history, check):
+def test_update_to_next_version(robot, bead_with_history, check, times):
     robot.cli('new', 'test-workspace')
     robot.cd('test-workspace')
     # add version TS1
-    robot.cli('input', 'add', 'input1', 'bead_with_history', '--time', fixtures.TS1)
-    check.loaded('input1', fixtures.TS1)
+    robot.cli('input', 'add', 'input1', 'bead_with_history', '--time', times.TS1)
+    check.loaded('input1', times.TS1)
 
     robot.cli('input', 'update', 'input1', '--next')
-    check.loaded('input1', fixtures.TS2)
+    check.loaded('input1', times.TS2)
 
     robot.cli('input', 'update', 'input1', '-N')
-    check.loaded('input1', fixtures.TS3)
+    check.loaded('input1', times.TS3)
 
 
-def test_update_to_previous_version(robot, bead_with_history, check):
+def test_update_to_previous_version(robot, bead_with_history, check, times):
     robot.cli('new', 'test-workspace')
     robot.cd('test-workspace')
     # add version TS1
-    robot.cli('input', 'add', 'input1', 'bead_with_history', '--time', fixtures.TS4)
-    check.loaded('input1', fixtures.TS4)
+    robot.cli('input', 'add', 'input1', 'bead_with_history', '--time', times.TS4)
+    check.loaded('input1', times.TS4)
 
     robot.cli('input', 'update', 'input1', '--prev')
-    check.loaded('input1', fixtures.TS3)
+    check.loaded('input1', times.TS3)
 
     robot.cli('input', 'update', 'input1', '-P')
-    check.loaded('input1', fixtures.TS2)
+    check.loaded('input1', times.TS2)
 
 
 def test_update_up_to_date_inputs_is_noop(robot, bead_a, bead_b):

@@ -3,10 +3,9 @@ import shutil
 from typing import Dict
 
 from bead.archive import Archive
-from . import test_fixtures as fixtures
 
 
-def test_basic_support(robot, bead_a, bead_with_history, box, check):
+def test_basic_support(robot, bead_a, bead_with_history, box, check, times):
     """
     update by name not by kind
     """
@@ -23,26 +22,26 @@ def test_basic_support(robot, bead_a, bead_with_history, box, check):
 
     # verify, that `add`, `save`, `develop`, `update`, and `status` all work with input_map
 
-    copy(fixtures.TS1, bead1)
-    copy(fixtures.TS2, bead2)
+    copy(times.TS1, bead1)
+    copy(times.TS2, bead2)
 
     # setup - bead_a with 2 inputs
     cli('develop', bead_a)
     cd(bead_a)
     cli('input', 'add', 'input1', bead1)
     cli('input', 'add', 'input2', bead2)
-    check.loaded('input1', fixtures.TS1)
-    check.loaded('input2', fixtures.TS2)
+    check.loaded('input1', times.TS1)
+    check.loaded('input2', times.TS2)
 
     cli('status')
     assert bead1 in robot.stdout
     assert bead2 in robot.stdout
 
     # `update` works by name, not by kind
-    copy(fixtures.TS3, bead1)
+    copy(times.TS3, bead1)
     cli('input', 'update')
-    check.loaded('input1', fixtures.TS3)
-    check.loaded('input2', fixtures.TS2)
+    check.loaded('input1', times.TS3)
+    check.loaded('input2', times.TS2)
 
     # save & develop works with names
     cli('save')
@@ -50,24 +49,24 @@ def test_basic_support(robot, bead_a, bead_with_history, box, check):
     cli('zap', bead_a)
     cli('develop', bead_a)
     cd(bead_a)
-    copy(fixtures.TS4, bead1)
-    copy(fixtures.TS3, bead2)
+    copy(times.TS4, bead1)
+    copy(times.TS3, bead2)
     cli('input', 'update')
-    check.loaded('input1', fixtures.TS4)
-    check.loaded('input2', fixtures.TS3)
+    check.loaded('input1', times.TS4)
+    check.loaded('input2', times.TS3)
 
     # `update` also sets the bead name for input
-    copy(fixtures.TS1, bead3)
+    copy(times.TS1, bead3)
     cli('input', 'update', 'input2', bead3)
-    check.loaded('input2', fixtures.TS1)
-    copy(fixtures.TS4, bead3)
+    check.loaded('input2', times.TS1)
+    copy(times.TS4, bead3)
     cli('input', 'update', 'input2')
-    check.loaded('input1', fixtures.TS4)
-    check.loaded('input2', fixtures.TS4)
+    check.loaded('input1', times.TS4)
+    check.loaded('input2', times.TS4)
 
 
 def test_load_finds_renamed_bead_only_after_rewiring_input_map(
-    robot, bead_a, bead_b, box, beads: Dict[str, Archive], check
+    robot, bead_a, bead_b, box, beads: Dict[str, Archive], check, times
 ):
     # reason: speed
     # reason: implementation simplicity
@@ -81,7 +80,7 @@ def test_load_finds_renamed_bead_only_after_rewiring_input_map(
     check.loaded('b', bead_b)
 
     # rename B to C
-    os.rename(beads[bead_b].archive_filename, box.directory / f'c_{fixtures.TS1}.zip')
+    os.rename(beads[bead_b].archive_filename, box.directory / f'c_{times.TS1}.zip')
 
     # unload input
     cli('input', 'unload', 'b')

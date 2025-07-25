@@ -1,5 +1,4 @@
 import pytest
-from . import test_fixtures as fixtures
 
 
 def test_status(robot, beads, bead_with_inputs, bead_a):

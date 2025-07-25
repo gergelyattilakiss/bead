@@ -20,6 +20,22 @@ TS5 = '20150901T151019000005+0200'
 TS_LAST = TS5
 
 
+class Times:
+    """Container for timestamp constants."""
+    TS1 = TS1
+    TS2 = TS2
+    TS3 = TS3
+    TS4 = TS4
+    TS5 = TS5
+    TS_LAST = TS_LAST
+
+
+@pytest.fixture
+def times():
+    """Fixture providing access to timestamp constants."""
+    return Times()
+
+
 class CheckAssertions:
     """Helper class for test assertions."""
     

@@ -3,7 +3,6 @@ import pytest
 
 from bead.workspace import Workspace
 from bead import layouts
-from . import test_fixtures as fixtures
 
 
 def test_by_name(robot, bead_a):
@@ -27,12 +26,12 @@ def assert_develop_version(robot, timestamp, *bead_spec):
     assert os.path.exists(robot.cwd / 'bead_with_history' / f'sentinel-{timestamp}')
 
 
-def test_last_version(robot, bead_with_history):
-    assert_develop_version(robot, fixtures.TS_LAST, bead_with_history)
+def test_last_version(robot, bead_with_history, times):
+    assert_develop_version(robot, times.TS_LAST, bead_with_history)
 
 
-def test_at_time(robot, bead_with_history):
-    assert_develop_version(robot, fixtures.TS1, 'bead_with_history', '-t', fixtures.TS1)
+def test_at_time(robot, bead_with_history, times):
+    assert_develop_version(robot, times.TS1, 'bead_with_history', '-t', times.TS1)
 
 
 def test_hacked_bead_is_detected(robot, hacked_bead):

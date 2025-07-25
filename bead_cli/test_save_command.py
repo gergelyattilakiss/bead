@@ -1,7 +1,6 @@
 import os
 import pytest
 
-from . import test_fixtures as fixtures
 from bead.workspace import Workspace
 from bead.box import Box
 

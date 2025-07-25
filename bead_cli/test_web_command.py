@@ -5,7 +5,6 @@ from bead.tech import persistence
 
 from bead_cli.web.freshness import Freshness
 from bead_cli.web.sketch import Sketch
-from . import test_fixtures as fixtures
 from tests.sketcher import Sketcher
 from tests.web.test_graphviz import needs_dot
 

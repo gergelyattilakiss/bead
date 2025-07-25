@@ -2,8 +2,6 @@ import pytest
 from bead.archive import Archive
 from bead.tech.fs import read_file, write_file
 
-from . import test_fixtures as fixtures
-
 
 def test_meta_attributes_are_available_without_reading_the_archive(
     robot, bead_with_inputs, beads
