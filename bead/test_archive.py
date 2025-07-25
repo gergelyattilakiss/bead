@@ -46,7 +46,7 @@ def test_extract_dir(bead_archive, temp_dir):
     extracted_dir = temp_dir / 'destination dir'
     bead = m.Archive(bead_archive)
     bead.extract_dir('path/to', extracted_dir)
-    extracted_file = os.path.join(extracted_dir, 'file1')
+    extracted_file = extracted_dir / 'file1'
     
     # then directory has the expected files
     assert {'file1', 'file2'} == set(os.listdir(extracted_dir))
