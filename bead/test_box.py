@@ -28,23 +28,6 @@ def timestamp():
     return time_from_user('20160704T162800000000+0200')
 
 
-@pytest.fixture
-def box_with_junk(temp_dir):
-    """Create a test box with sample beads and junk files."""
-    box = Box('test', temp_dir)
-
-    def add_bead(name, kind, freeze_time):
-        ws = Workspace(temp_dir / name)
-        ws.create(kind)
-        box.store(ws, freeze_time)
-
-    add_bead('bead1', 'test-bead1', '20160704T000000000000+0200')
-    add_bead('bead2', 'test-bead2', '20160704T162800000000+0200')
-    add_bead('BEAD3', 'test-bead3', '20160704T162800000001+0200')
-    
-    # add junk
-    write_file(box.directory / 'some-non-bead-file', 'random bits')
-    return box
 
 
 def test_all_beads(box):
