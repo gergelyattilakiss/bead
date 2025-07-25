@@ -1,4 +1,3 @@
-import pytest
 
 
 def test_status(robot, beads, bead_with_inputs, bead_a):

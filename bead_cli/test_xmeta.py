@@ -1,4 +1,3 @@
-import pytest
 from bead.archive import Archive
 from bead.tech.fs import read_file, write_file
 

@@ -1,5 +1,3 @@
-import os
-import pytest
 from .. import tech
 
 securehash = tech.securehash
@@ -18,7 +16,7 @@ def test_file_hash(tmp_path):
         hashresult = securehash.file(f, file_size)
     
     # then result is an ascii string of more than 32 chars
-    encoded = hashresult.encode('ascii')
+    hashresult.encode('ascii')
     is_string = isinstance(hashresult, str)
     length = len(hashresult)
     assert is_string
@@ -34,7 +32,7 @@ def test_bytes_hash():
     hashresult = securehash.bytes(some_bytes)
     
     # then result is an ascii string of more than 32 chars
-    encoded = hashresult.encode('ascii')
+    hashresult.encode('ascii')
     is_string = isinstance(hashresult, str)
     length = len(hashresult)
     assert is_string
