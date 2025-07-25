@@ -52,7 +52,7 @@ def test_for_current_working_directory_non_workspace(temp_dir):
     """Test workspace detection in non-workspace directory."""
     with chdir(temp_dir):
         ws = m.Workspace.for_current_working_directory()
-    assert tech.fs.Path(os.path.realpath(temp_dir)) == ws.directory
+    assert temp_dir.resolve() == ws.directory
 
 
 def test_for_current_working_directory_workspace_root(temp_dir):
@@ -62,7 +62,7 @@ def test_for_current_working_directory_workspace_root(temp_dir):
     workspace.create(A_KIND)
     with chdir(root):
         ws = m.Workspace.for_current_working_directory()
-    assert tech.fs.Path(os.path.realpath(root)) == ws.directory
+    assert root.resolve() == ws.directory
 
 
 def test_for_current_working_directory_above_root(temp_dir):
@@ -72,7 +72,7 @@ def test_for_current_working_directory_above_root(temp_dir):
     workspace.create(A_KIND)
     with chdir(root / layouts.Workspace.INPUT):
         ws = m.Workspace.for_current_working_directory()
-    assert tech.fs.Path(os.path.realpath(root)) == ws.directory
+    assert root.resolve() == ws.directory
 
 
 SOURCE1 = b's1'
