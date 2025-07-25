@@ -204,8 +204,9 @@ def _load_a_bead(workspace, input_nick, temp_dir_path):
     workspace.load(input_nick, Archive(path_of_bead_to_load))
 
 
-def test_load_makes_bead_files_available_under_input(load_workspace, temp_dir):
+def test_load_makes_bead_files_available_under_input(load_workspace, tmp_path_factory):
     """Test that loading a bead makes its files available under input."""
+    temp_dir = tmp_path_factory.mktemp("load_test")
     _load_a_bead(load_workspace, 'bead1', temp_dir)
     
     assert (load_workspace.directory / 'input/bead1/output1').read_bytes() == b'data for bead1'
