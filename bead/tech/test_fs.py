@@ -8,8 +8,7 @@ def test_make_readonly_file(tmp_path):
     """Test making a file read-only."""
     # given a file
     file_path = tmp_path / 'file'
-    with open(file_path, 'wb'):
-        pass
+    file_path.write_bytes(b'')
     
     # when made readonly
     m.make_readonly(file_path)
@@ -42,8 +41,7 @@ def test_make_writable_file(tmp_path):
     """Test making a read-only file writable."""
     # given a read only file
     file_path = tmp_path / 'file'
-    with open(file_path, 'wb'):
-        pass
+    file_path.write_bytes(b'')
     m.make_readonly(file_path)
     
     # when made writable
@@ -64,8 +62,7 @@ def test_make_writable_directory(tmp_path):
     m.make_writable(dir_path)
     
     # then file can be created under directory
-    with open(dir_path / 'file', 'wb') as f:
-        f.write(b'little something')
+    (dir_path / 'file').write_bytes(b'little something')
 
 
 def test_all_subpaths(tmp_path):

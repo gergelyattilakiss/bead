@@ -15,12 +15,10 @@ def test_streams(tmp_path):
     """Test persistence through file streams."""
     # given a persisted structure as a file
     file_path = tmp_path / 'file'
-    with open(file_path, 'w') as f:
-        m.dump(get_structure(), f)
+    file_path.write_text(m.dumps(get_structure()))
     
     # when file is read back
-    with open(file_path, 'r') as f:
-        structure = m.load(f)
+    structure = m.loads(file_path.read_text())
     
     # then it equals the original structure
     assert get_structure() == structure

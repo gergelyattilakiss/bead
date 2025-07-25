@@ -216,13 +216,13 @@ def test_load_loaded_inputs_are_read_only(load_workspace, tmp_path_factory):
     _load_a_bead(load_workspace, 'bead1', tmp_path_factory)
     
     root = load_workspace.directory / 'input/bead1'
-    assert os.path.exists(root)
+    assert root.exists()
     with pytest.raises(IOError):
         open(root / 'output1', 'ab')
     # also folders are read only - this does not work on Windows
     if os.name == 'posix':
         with pytest.raises(IOError):
-            open(root / 'new-file', 'wb')
+            (root / 'new-file').write_bytes(b'')
 
 
 def test_load_adds_input_to_bead_meta(load_workspace, tmp_path_factory):
