@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import NoReturn
 
 from bead.exceptions import InvalidArchive
 from bead.workspace import Workspace
@@ -18,7 +19,7 @@ TIME_LATEST = parse_iso8601('9999-12-31')
 ERROR_EXIT = 1
 
 
-def die(msg):
+def die(msg) -> NoReturn:
     sys.stderr.write('ERROR: ')
     sys.stderr.write(msg)
     sys.stderr.write('\n')

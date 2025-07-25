@@ -140,7 +140,7 @@ def test_pack_not_saved_content(packed_archive):
         with zipfile.ZipFile(packed_archive) as z:
             archive_path = layouts.Archive.CODE / workspace_path
             with pytest.raises(KeyError):
-                z.getinfo(archive_path)
+                z.getinfo(str(archive_path))
 
     does_not_contain(layouts.Workspace.BEAD_META)
     does_not_contain(layouts.Workspace.TEMP / 'README')
