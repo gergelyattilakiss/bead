@@ -31,7 +31,7 @@ jobs:
 
     - name: Build executables
       run: |
-        python dev/build.py
+        make executables
 
     - name: Verify executables were created
       shell: bash
