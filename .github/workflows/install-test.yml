@@ -1,0 +1,108 @@
+name: Installation and Basic Usage Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  install-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Build executables
+      run: |
+        python dev/build.py
+
+    - name: Verify executables were created
+      shell: bash
+      run: |
+        ls -la executables/
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          test -f executables/bead.cmd
+          echo "Windows executable found: bead.cmd"
+        else
+          test -f executables/bead
+          echo "Unix/Mac executable found: bead"
+        fi
+
+    - name: Test executable permissions (Unix/Mac only)
+      if: matrix.os != 'windows-latest'
+      run: |
+        test -x executables/bead
+        echo "Executable has correct permissions"
+
+    - name: Test basic bead functionality (Unix/Mac)
+      if: matrix.os != 'windows-latest'
+      run: |
+        ./executables/bead --help
+        ./executables/bead --version
+
+    - name: Test basic bead functionality (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        python executables/bead.cmd --help
+        python executables/bead.cmd --version
+
+    - name: Test bead commands - create workspace
+      shell: bash
+      run: |
+        mkdir test-workspace
+        cd test-workspace
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          python ../executables/bead.cmd new test-bead
+        else
+          ../executables/bead new test-bead
+        fi
+        test -d test-bead
+        echo "Successfully created test workspace"
+
+    - name: Test bead commands - workspace status
+      shell: bash
+      run: |
+        cd test-workspace/test-bead
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          python ../../executables/bead.cmd status
+        else
+          ../../executables/bead status
+        fi
+        echo "Successfully checked workspace status"
+
+    - name: Verify installation according to README
+      shell: bash
+      run: |
+        # Test copying to a PATH directory (simulate installation)
+        mkdir -p test-bin
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          cp executables/bead.cmd test-bin/
+          export PATH="$PWD/test-bin:$PATH"
+          # Test that we can run from PATH (Windows needs python prefix)
+          cd /tmp || cd $TEMP
+          python "$GITHUB_WORKSPACE/test-bin/bead.cmd" --help
+        else
+          cp executables/bead test-bin/
+          export PATH="$PWD/test-bin:$PATH"
+          # Test that we can run from PATH
+          cd /tmp
+          bead --help
+        fi
+        echo "Successfully tested installation to PATH"
