@@ -96,12 +96,20 @@ jobs:
           export PATH="$PWD/test-bin:$PATH"
           # Test that we can run from PATH (Windows needs python prefix)
           cd /tmp || cd $TEMP
-          python "$GITHUB_WORKSPACE/test-bin/bead.cmd" --help
+          python "$GITHUB_WORKSPACE/test-bin/bead.cmd" version
+          # Create a new workspace to verify full functionality
+          python "$GITHUB_WORKSPACE/test-bin/bead.cmd" new verification-test
+          test -d verification-test
+          echo "Successfully created verification workspace on Windows"
         else
           cp executables/bead test-bin/
           export PATH="$PWD/test-bin:$PATH"
           # Test that we can run from PATH
           cd /tmp
           bead version
+          # Create a new workspace to verify full functionality
+          bead new verification-test
+          test -d verification-test
+          echo "Successfully created verification workspace on Unix/Mac"
         fi
-        echo "Successfully tested installation to PATH"
+        echo "Successfully tested installation to PATH with workspace creation"
