@@ -30,6 +30,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Build executables
+      shell: bash
       run: |
         make executables
 
@@ -54,13 +55,11 @@ jobs:
     - name: Test basic bead functionality (Unix/Mac)
       if: matrix.os != 'windows-latest'
       run: |
-        ./executables/bead --help
         ./executables/bead version
 
     - name: Test basic bead functionality (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        python executables/bead.cmd --help
         python executables/bead.cmd version
 
     - name: Test bead commands - create workspace

@@ -12,4 +12,4 @@ shiv: git-info
 	shiv -o executables/bead.shiv -c bead -p '/usr/bin/python -sE' .
 
 git-info:
-	./add-git-info.sh
+	python add-git-info.py
