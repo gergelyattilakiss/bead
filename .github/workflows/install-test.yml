@@ -102,6 +102,6 @@ jobs:
           export PATH="$PWD/test-bin:$PATH"
           # Test that we can run from PATH
           cd /tmp
-          bead --help
+          bead version
         fi
         echo "Successfully tested installation to PATH"
