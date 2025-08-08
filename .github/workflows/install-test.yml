@@ -55,13 +55,13 @@ jobs:
       if: matrix.os != 'windows-latest'
       run: |
         ./executables/bead --help
-        ./executables/bead --version
+        ./executables/bead version
 
     - name: Test basic bead functionality (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         python executables/bead.cmd --help
-        python executables/bead.cmd --version
+        python executables/bead.cmd version
 
     - name: Test bead commands - create workspace
       shell: bash
