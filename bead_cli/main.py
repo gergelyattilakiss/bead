@@ -4,6 +4,7 @@ import subprocess
 import sys
 import textwrap
 import traceback
+import importlib.metadata
 
 from collections.abc import Sequence
 
@@ -71,7 +72,16 @@ class CmdVersion(Command):
     '''
 
     def run(self, args):
-        print(git.version_info)
+        try:
+            version = importlib.metadata.version('bead')
+            print(f'bead version {version}')
+        except importlib.metadata.PackageNotFoundError:
+            # Development mode - show git info
+            print('bead development version')
+            print(git.version_info)
+        
+        # Always show Python version
+        print(f'\nPython {sys.version}')
 
 
 def make_argument_parser(defaults):
@@ -158,12 +168,27 @@ def main(run=run):
             f.write(f'{git.version_info}\n')
             if git.dirty:
                 f.write('WARNING: TEST BUILD, UNKNOWN, UNCOMMITTED CHANGES !!!\n')
+        # Try to get repository URL from package metadata
+        try:
+            metadata = importlib.metadata.metadata('bead')
+            repo_url = metadata.get('Home-page', 'https://github.com/codedthinking/bead')
+            if not repo_url:
+                # Try project urls
+                for key in ['Repository', 'Homepage']:
+                    repo_url = metadata.get(f'Project-URL: {key}', '')
+                    if repo_url:
+                        break
+                if not repo_url:
+                    repo_url = 'https://github.com/codedthinking/bead'
+        except:
+            repo_url = 'https://github.com/codedthinking/bead'
+        
         print(
             FAILURE_TEMPLATE.format(
                 exception=short_exception,
                 error_report=error_report,
-                repo='https://github.com/e3krisztian/bead',
-                dev='e3krisztian',
+                repo=repo_url,
+                dev='bead-dev',
             ),
             file=sys.stderr
         )

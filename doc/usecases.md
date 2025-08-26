@@ -96,7 +96,7 @@ The output of the computation is stored under `data/*`. An outide collaborator w
         There {is,will be,was} more info about BEADs at
         - https://unknot.io
         - https://github.com/ceumicrodata/bead
-        - https://github.com/e3krisztian/bead
+        - https://github.com/codedthinking/bead
 
         ----
 

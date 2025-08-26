@@ -19,6 +19,12 @@ dependencies = [
     "pip>=25.1.1",
 ]
 
+[project.urls]
+Homepage = "https://github.com/codedthinking/bead"
+Repository = "https://github.com/codedthinking/bead"
+"Bug Tracker" = "https://github.com/codedthinking/bead/issues"
+Documentation = "https://github.com/codedthinking/bead#readme"
+
 [project.scripts]
 bead = 'bead_cli.main:main'
 
