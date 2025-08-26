@@ -20,10 +20,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/codedthinking/bead"
+Homepage = "https://bead.zip"
 Repository = "https://github.com/codedthinking/bead"
 "Bug Tracker" = "https://github.com/codedthinking/bead/issues"
-Documentation = "https://github.com/codedthinking/bead#readme"
+Documentation = "https://bead.zip"
 
 [project.scripts]
 bead = 'bead_cli.main:main'
