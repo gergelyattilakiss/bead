@@ -5,12 +5,7 @@ description = "Linked frozen computations"
 authors = [{name = "Krisztián Fekete"}]
 license = {text = "The Unlicense"}
 requires-python = ">=3.10"
-packages = [
-    { include = "bead" },
-    { include = "bead_cli" },
-    { include = "tracelog.py" },
-    { include = "tests" },
-]
+
 dependencies = [
     "appdirs",
     "argcomplete>=3.6.2",
@@ -44,5 +39,12 @@ reportUnknownParameterType = false
 reportUnknownVariableType = false
 
 [build-system]
-requires = ["flit_core"]
-build-backend = "flit_core.buildapi"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["bead", "bead.tech", "bead_cli", "bead_cli.web", "tests", "tests.web"]
+py-modules = ["tracelog"]
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md"]
