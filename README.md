@@ -51,14 +51,53 @@ are nor describing the current situations nor are they showing the future.
 FIXME: clean up documentation.
 
 
-## Install instructions
+## Installation
+
+### Using pipx (recommended)
+
+The easiest way to install `bead` is using [pipx](https://pypa.github.io/pipx/), which installs Python applications in isolated environments:
+
+#### From GitHub (latest development version)
+```bash
+pipx install git+https://github.com/codedthinking/bead.git
+```
+
+#### From a specific branch or tag
+```bash
+# Install from a branch
+pipx install git+https://github.com/codedthinking/bead.git@branch-name
+
+# Install from a tag
+pipx install git+https://github.com/codedthinking/bead.git@v0.8.1
+```
+
+#### Upgrade to latest version
+```bash
+pipx upgrade bead
+```
+
+#### From PyPI (coming soon)
+Once published to PyPI, you'll be able to install with:
+```bash
+pipx install bead
+```
+
+### Using pip
+
+You can also install using pip, though pipx is recommended for better isolation:
+
+```bash
+pip install git+https://github.com/codedthinking/bead.git
+```
+
+### Building from source
 
 Ensure you have Python 3.10+ installed.
 
-Run `make executables` to create the `bead` tool:
+Run `make executables` to create standalone executables:
 
 ```
-$ python build.py
+$ make executables
 ```
 
 This generates one-file executables for unix, mac, and windows in the `executables` directory:
