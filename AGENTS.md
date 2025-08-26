@@ -20,3 +20,9 @@
 - **Documentation:** Use docstrings with triple quotes for modules and classes
 - **File structure:** Keep modules focused; use tech/ subpackage for utilities
 - **Testing:** Place tests in test_*.py files; use pytest fixtures in conftest.py
+
+## Python Compatibility
+- **Supported versions:** Python 3.10, 3.11, 3.12, 3.13
+- **Type hints:** Currently uses pre-3.10 style (typing.Dict, typing.List) for broader compatibility
+- **No deprecated features:** Clean of removed modules (distutils, imp, asyncore)
+- **Testing:** Tox tests against py310, py311, py312, py313
