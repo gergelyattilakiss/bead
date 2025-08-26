@@ -133,14 +133,13 @@ def run(config_dir: str, argv: Sequence[str]):
 FAILURE_TEMPLATE = """\
 {exception}
 
-If you are using the latest version, and have not reported this error yet
-please report this problem by copy-pasting the content of file {error_report}
-at {repo}/issues/new
-and/or attaching the file to an email to {dev}@gmail.com.
+An unexpected error occurred. Please report this issue at:
+{repo}/issues/new
 
-Please make sure you copy-paste from the file {error_report}
-and not from the console, as the shown exception text was shortened
-for your convenience, thus it is not really helpful in fixing the bug.
+Include the full error report from: {error_report}
+
+Note: The console output above has been shortened. 
+Please use the full error report file when creating the issue.
 """
 
 
@@ -188,7 +187,6 @@ def main(run=run):
                 exception=short_exception,
                 error_report=error_report,
                 repo=repo_url,
-                dev='bead-dev',
             ),
             file=sys.stderr
         )
