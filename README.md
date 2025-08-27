@@ -1,7 +1,3 @@
-Health:
-Travis [![Build Status](https://travis-ci.org/e3krisztian/bead.svg?branch=master)](https://travis-ci.org/e3krisztian/bead)
-AppVeyor [![Build Status](https://ci.appveyor.com/api/projects/status/github/e3krisztian/bead?branch=master&svg=true)](https://ci.appveyor.com/project/e3krisztian/bead)
-
     B-E-+
      \ \ \
       +-A-D
@@ -125,9 +121,7 @@ Thank you for your interest!
 
 ## TODOs
 
-Updated by script ([./ci](https://github.com/e3krisztian/bead/blob/wip/ci)), text in this section and afterwards will be overwritten
-
-- [FIXME: this test helper uses private to box implementation information](https://github.com/e3krisztian/bead/blob/wip/bead_cli/test_feature_update_by_name.py#L102)
-- [TODO: log/report problem](https://github.com/e3krisztian/bead/blob/wip/bead/box.py#L160)
-- [XXX: (usability) save - support saving directly to a directory outside of workspace](https://github.com/e3krisztian/bead/blob/wip/bead_cli/workspace.py#L87)
-- [XXX: try to load smaller inputs?](https://github.com/e3krisztian/bead/blob/wip/bead_cli/workspace.py#L163)
+- FIXME: test helper uses private to box implementation information (test_feature_update_by_name.py)
+- TODO: log/report problem (box.py)
+- XXX: (usability) save - support saving directly to a directory outside of workspace
+- XXX: try to load smaller inputs?

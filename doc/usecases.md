@@ -94,9 +94,8 @@ The output of the computation is stored under `data/*`. An outide collaborator w
         - reproducing multi-BEAD computation sequences built by a distributed team
 
         There {is,will be,was} more info about BEADs at
-        - https://unknot.io
-        - https://github.com/ceumicrodata/bead
-        - https://github.com/e3krisztian/bead
+        - https://bead.zip
+        - https://github.com/codedthinking/bead
 
         ----
 
