@@ -28,23 +28,33 @@ class _git:
     def __init__(self):
         try:
             from . import git_info
-        except ImportError:
-            self.repo = output_of('git config --get remote.origin.url')
-            self.branch = output_of('git branch --show-current')
-            self.date = output_of("git show HEAD --pretty=tformat:'%cI' --no-patch")
-            self.commit = output_of("git show HEAD --pretty=tformat:'%H' --no-patch")
-            self.tag = output_of('git describe --tags')
-            modified_files = [
-                line for line in output_of('git status --porcelain=1').splitlines()
-                if not line.startswith('??') and ' bead_cli/git_info.py' not in line]
-            self.dirty = modified_files != []
-        else:
             self.repo = git_info.GIT_REPO
             self.branch = git_info.GIT_BRANCH
             self.date = git_info.GIT_DATE
             self.commit = git_info.GIT_HASH
             self.tag = git_info.TAG_VERSION
             self.dirty = git_info.DIRTY
+        except ImportError:
+            # No git_info means this is likely an installed package, not a dev build
+            # Only try git commands if we're actually in a git repo
+            try:
+                self.repo = output_of('git config --get remote.origin.url')
+                self.branch = output_of('git branch --show-current')
+                self.date = output_of("git show HEAD --pretty=tformat:'%cI' --no-patch")
+                self.commit = output_of("git show HEAD --pretty=tformat:'%H' --no-patch")
+                self.tag = output_of('git describe --tags')
+                modified_files = [
+                    line for line in output_of('git status --porcelain=1').splitlines()
+                    if not line.startswith('??') and ' bead_cli/git_info.py' not in line]
+                self.dirty = modified_files != []
+            except:
+                # Not in a git repo or git not available - this is a normal install
+                self.repo = ''
+                self.branch = ''
+                self.date = ''
+                self.commit = ''
+                self.tag = ''
+                self.dirty = False  # Installed packages are never "dirty"
 
         self.version_info = textwrap.dedent(
             '''
