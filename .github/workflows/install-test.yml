@@ -208,7 +208,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: test-env
-        environment-file: environment.yml
         auto-activate: false
 
     - name: Install UV
@@ -263,13 +262,8 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate test-env
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          python -m pip install .
-          bead version
-        else
-          pip install .
-          bead version
-        fi
+        pip install .
+        bead version
         echo "Successfully installed and tested with conda"
 
 
