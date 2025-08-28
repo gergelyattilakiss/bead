@@ -208,23 +208,16 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: test-env
-        auto-activate: true
+        environment-file: environment.yml
+        auto-activate: false
 
-    - name: Install UV (Windows)
-      if: matrix.manager == 'uv' && matrix.os == 'windows-latest'
-      shell: powershell
-      run: |
-        Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression
-        echo "$env:HOME/.local/bin" >> $env:GITHUB_PATH
-
-    - name: Install UV (Unix/Mac)
-      if: matrix.manager == 'uv' && matrix.os != 'windows-latest'
-      shell: bash
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-        uv --version
-       
+    - name: Install UV
+      if: matrix.manager == 'uv'
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "latest"
+        python-version: ${{ matrix.python-version }}
+             
 
     - name: Install Poetry (Windows)
       if: matrix.manager == 'poetry' && matrix.os == 'windows-latest'
@@ -271,7 +264,7 @@ jobs:
       run: |
         conda activate test-env
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          python.exe -m pip install .
+          python -m pip install .
           bead version
         else
           pip install .
