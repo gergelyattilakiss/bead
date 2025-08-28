@@ -269,19 +269,16 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate test-env
-        pip install .
-        bead version
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          python.exe -m pip install .
+          python.exe -m bead version
+        else
+          pip install .
+          bead version
+        fi
         echo "Successfully installed and tested with conda"
 
 
-    - name: Test installation with Conda (Windows)
-      if: matrix.manager == 'conda' && matrix.os == 'windows-latest'
-      shell: bash -l {0}
-      run: |
-        conda activate test-env
-        python.exe -m pip install .
-        python.exe -m bead version
-        echo "Successfully installed and tested with conda"
 
 
     - name: Test basic functionality
@@ -300,9 +297,15 @@ jobs:
           "conda")
             eval "$(conda shell.bash hook)"
             conda activate test-env
-            bead new test-bead
-            cd test-bead
-            bead status
+            if [[ "$RUNNER_OS" == "Windows" ]]; then
+              python.exe -m bead new test-bead
+              cd test-bead
+              python.exe -m bead status
+            else
+              bead new test-bead
+              cd test-bead
+              bead status
+            fi
             ;;
           *)
             bead new test-bead
