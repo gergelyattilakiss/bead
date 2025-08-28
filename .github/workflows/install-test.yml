@@ -252,6 +252,9 @@ jobs:
       if: matrix.manager == 'uv'
       shell: bash
       run: |
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          $env:Path = "C:\Users\runneradmin\.local\bin;$env:Path"
+        fi
         uv pip install --system .
         bead version
         echo "Successfully installed and tested with uv"
@@ -271,7 +274,7 @@ jobs:
         conda activate test-env
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           python.exe -m pip install .
-          python.exe -m bead version
+          python bead version
         else
           pip install .
           bead version
