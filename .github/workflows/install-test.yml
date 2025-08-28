@@ -208,7 +208,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: test-env
-        auto-activate: false
+        auto-activate: true
 
     - name: Install UV (Windows)
       if: matrix.manager == 'uv' && matrix.os == 'windows-latest'
@@ -223,6 +223,7 @@ jobs:
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.local/bin" >> $GITHUB_PATH
+        uv --version
        
 
     - name: Install Poetry (Windows)
@@ -293,18 +294,12 @@ jobs:
             poetry run bead status
             ;;
           "conda")
-            if [[ "$RUNNER_OS" == "Windows" ]]; then
-              conda.exe activate test-env 
-              bead new test-bead
-              cd test-bead
-              bead status
-            else
-              conda activate test-env 
-              bead new test-bead
-              cd test-bead
-              bead status
-            fi
-                        ;;
+            eval "$(conda shell.bash hook)"
+            conda activate test-env
+            bead new test-bead
+            cd test-bead
+            bead status
+            ;;
           *)
             bead new test-bead
             cd test-bead
