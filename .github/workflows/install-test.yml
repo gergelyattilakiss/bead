@@ -123,7 +123,7 @@ jobs:
         python -m pip install --user pipx
         python -m pipx ensurepath
         export PATH="$HOME/.local/bin:$PATH"
-        pipx install bead --force
+        pipx install . --force
         bead version
         # Create a new workspace to verify full functionality
         mkdir -p test-workspace-pipx
@@ -216,6 +216,7 @@ jobs:
       run: |
         Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression
         echo "$env:USERPROFILE\.local\bin" >> $env:GITHUB_PATH
+        set Path=C:\Users\runneradmin\.local\bin;%Path%
 
     - name: Install UV (Unix/Mac)
       if: matrix.manager == 'uv' && matrix.os != 'windows-latest'
@@ -223,6 +224,7 @@ jobs:
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.local/bin" >> $GITHUB_PATH
+       
 
     - name: Install Poetry (Windows)
       if: matrix.manager == 'poetry' && matrix.os == 'windows-latest'
@@ -230,6 +232,7 @@ jobs:
       run: |
         (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
         echo "$env:USERPROFILE\.local\bin" >> $env:GITHUB_PATH
+        set Path=C:\Users\runneradmin\.local\bin;%Path%
 
     - name: Install Poetry (Unix/Mac)
       if: matrix.manager == 'poetry' && matrix.os != 'windows-latest'
@@ -238,30 +241,12 @@ jobs:
         curl -sSL https://install.python-poetry.org | python3 -
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: test package manager named installation
-      continue-on-error: true
-      shell: bash
-      run: |
-        if [[ "${{ matrix.manager }}" == "pip" ]]; then
-          pip install bead
-        elif [[ "${{ matrix.manager }}" == "uv" ]]; then
-          echo "Testing uv installation"
-          uv pip install bead --system
-        elif [[ "${{ matrix.manager }}" == "poetry" ]]; then
-          echo "Testing poetry installation"
-          poetry install bead
-        elif [[ "${{ matrix.manager }}" == "conda" ]]; then
-          echo "Testing conda installation"
-          conda install bead
-        fi
-
-
     - name: Test installation with pip
       if: matrix.manager == 'pip'
       shell: bash
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install .
+        pip install --upgrade pip
+        pip install .
         bead version
         echo "Successfully installed and tested with pip"
 
@@ -289,6 +274,32 @@ jobs:
         pip install .
         bead version
         echo "Successfully installed and tested with conda"
+
+    - name: Test installation with uv (Windows)
+      if: matrix.manager == 'uv' && matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        uv.exe pip install --system .
+        bead version
+        echo "Successfully installed and tested with uv"
+
+    - name: Test installation with Poetry (Windows)
+      if: matrix.manager == 'poetry'
+      shell: bash
+      run: |
+        poetry.exe install
+        poetry.exe run bead version
+        echo "Successfully installed and tested with poetry"
+
+    - name: Test installation with Conda (Conda)
+      if: matrix.manager == 'conda'
+      shell: bash -l {0}
+      run: |
+        conda activate test-env
+        python -m pip install .
+        bead version
+        echo "Successfully installed and tested with conda"
+
 
     - name: Test basic functionality
       shell: bash
