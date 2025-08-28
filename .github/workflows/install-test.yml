@@ -215,7 +215,7 @@ jobs:
       shell: powershell
       run: |
         Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression
-        echo "$env:USERPROFILE\.cargo\bin" >> $env:GITHUB_PATH
+        echo "$env:USERPROFILE\.local\bin" >> $env:GITHUB_PATH
 
     - name: Install UV (Unix/Mac)
       if: matrix.manager == 'uv' && matrix.os != 'windows-latest'
