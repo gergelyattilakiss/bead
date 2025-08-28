@@ -216,7 +216,7 @@ jobs:
       run: |
         Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression
         echo "$env:USERPROFILE\.local\bin" >> $env:GITHUB_PATH
-        set Path=C:\Users\runneradmin\.local\bin;%Path%
+        $env:Path = "C:\Users\runneradmin\.local\bin;$env:Path"
 
     - name: Install UV (Unix/Mac)
       if: matrix.manager == 'uv' && matrix.os != 'windows-latest'
@@ -279,20 +279,20 @@ jobs:
       if: matrix.manager == 'uv' && matrix.os == 'windows-latest'
       shell: bash
       run: |
-        uv.exe pip install --system .
+        uv pip install --system .
         bead version
         echo "Successfully installed and tested with uv"
 
     - name: Test installation with Poetry (Windows)
-      if: matrix.manager == 'poetry'
+      if: matrix.manager == 'poetry' && matrix.os == 'windows-latest'
       shell: bash
       run: |
-        poetry.exe install
-        poetry.exe run bead version
+        poetry install
+        poetry run bead version
         echo "Successfully installed and tested with poetry"
 
     - name: Test installation with Conda (Conda)
-      if: matrix.manager == 'conda'
+      if: matrix.manager == 'conda' && matrix.os == 'windows-latest'
       shell: bash -l {0}
       run: |
         conda activate test-env
