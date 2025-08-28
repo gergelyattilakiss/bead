@@ -262,7 +262,11 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate test-env
-        conda develop .
+        if  [[ "$RUNNER_OS" == "Windows" ]]; then
+          python -m pip install .
+        else
+          pip install .
+        fi
         bead version
         echo "Successfully installed and tested with conda"
 
