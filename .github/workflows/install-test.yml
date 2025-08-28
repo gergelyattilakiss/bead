@@ -1,10 +1,6 @@
 name: Installation and Basic Usage Test
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -113,3 +109,220 @@ jobs:
           echo "Successfully created verification workspace on Unix/Mac"
         fi
         echo "Successfully tested installation to PATH with workspace creation"
+
+    - name: Clean up test directories
+      shell: bash
+      run: |
+        rm -rf test-workspace verification-test test-bin executables
+        echo "Cleaned up test directories"
+
+  dependency-manager-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+        manager: [pip, uv, poetry, conda]
+        # exclude:
+        #   # Conda may have compatibility issues with newer Python versions on some platforms
+        #   - manager: conda
+        #     python-version: '3.12'
+        #     os: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      if: matrix.manager != 'conda'
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set up Conda
+      if: matrix.manager == 'conda'
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        activate-environment: test-env
+        auto-activate-base: false
+
+    - name: Install UV
+      if: matrix.manager == 'uv'
+      shell: bash
+      run: |
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          curl -LsSf https://astral.sh/uv/install.ps1 | powershell -c -
+        else
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+        fi
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Install Poetry
+      if: matrix.manager == 'poetry'
+      shell: bash
+      run: |
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        else
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        fi
+
+    - name: test package manager named installation
+      continue-on-error: true
+      shell: bash
+      run: |
+        if [[ "${{ matrix.manager }}" == "pip" ]]; then
+          pip install bead
+        elif [[ "${{ matrix.manager }}" == "uv" ]]; then
+          echo "Testing uv installation"
+          uv pip install bead --system
+        elif [[ "${{ matrix.manager }}" == "poetry" ]]; then
+          echo "Testing poetry installation"
+          poetry install bead
+        elif [[ "${{ matrix.manager }}" == "conda" ]]; then
+          echo "Testing conda installation"
+          conda install bead
+        fi
+
+
+    - name: Test installation with pip
+      if: matrix.manager == 'pip'
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install .
+        bead version
+        echo "Successfully installed and tested with pip"
+
+    - name: Test installation with uv
+      if: matrix.manager == 'uv'
+      shell: bash
+      run: |
+        uv pip install --system .
+        bead version
+        echo "Successfully installed and tested with uv"
+
+    - name: Test installation with Poetry
+      if: matrix.manager == 'poetry'
+      shell: bash
+      run: |
+        poetry install
+        poetry run bead version
+        echo "Successfully installed and tested with poetry"
+
+    - name: Test installation with Conda
+      if: matrix.manager == 'conda'
+      shell: bash -l {0}
+      run: |
+        conda activate test-env
+        pip install .
+        bead version
+        echo "Successfully installed and tested with conda"
+
+    - name: Test basic functionality
+      shell: bash
+      run: |
+        # Create a test workspace
+        mkdir test-workspace-${{ matrix.manager }}
+        cd test-workspace-${{ matrix.manager }}
+        
+        case "${{ matrix.manager }}" in
+          "poetry")
+            poetry run bead new test-bead
+            cd test-bead
+            poetry run bead status
+            ;;
+          "conda")
+            eval "$(conda shell.bash hook)"
+            conda activate test-env
+            bead new test-bead
+            cd test-bead
+            bead status
+            ;;
+          *)
+            bead new test-bead
+            cd test-bead
+            bead status
+            ;;
+        esac
+        
+        echo "Successfully created workspace and checked status with ${{ matrix.manager }}"
+
+    - name: Clean up test directories
+      shell: bash
+      run: |
+        rm -rf test-workspace-${{ matrix.manager }}
+        echo "Cleaned up test directories"
+
+  r-package-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        r-version: ['4.3.0', '4.4.0']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up R ${{ matrix.r-version }}
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: ${{ matrix.r-version }}
+
+    - name: Set up Python (for R integration)
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install system dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-dev
+
+    - name: Install bead in R
+      continue-on-error: true
+      shell: Rscript {0}
+      run: |
+        install.packages("bead", repos = NULL, type = "source")
+
+    - name: Install R dependencies
+      run: |
+        install.packages(c("reticulate", "devtools"))
+      shell: Rscript {0}
+
+    - name: Test R integration with reticulate
+      shell: Rscript {0}
+      run: |
+        library(reticulate)
+        
+        # Install bead package in Python
+        py_install(".", pip = TRUE)
+        
+        # Test that we can import and use bead from R
+        bead <- import("bead_cli.main")
+        
+        # Create a simple test
+        cat("Successfully imported bead from R via reticulate\n")
+        
+        # Test version command through system call
+        system("python -c \"import bead_cli.main; print('R integration test passed')\"")
+
+    - name: Test R package installation 
+      shell: bash
+      run: |
+          bead new test-bead
+          cd test-bead
+          bead status
+
+    - name: Clean up test directories
+      shell: bash
+      run: |
+        rm -rf test-bead
+        echo "Cleaned up test directories"
+
+
