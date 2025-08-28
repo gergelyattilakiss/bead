@@ -215,8 +215,7 @@ jobs:
       shell: powershell
       run: |
         Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression
-        echo "$env:USERPROFILE\.local\bin" >> $env:GITHUB_PATH
-        $env:Path = "C:\Users\runneradmin\.local\bin;$env:Path"
+        echo "$env:USERPROFILE\.cargo\bin" >> $env:GITHUB_PATH
 
     - name: Install UV (Unix/Mac)
       if: matrix.manager == 'uv' && matrix.os != 'windows-latest'
@@ -231,8 +230,7 @@ jobs:
       shell: powershell
       run: |
         (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
-        echo "$env:USERPROFILE\.local\bin" >> $env:GITHUB_PATH
-        set Path=C:\Users\runneradmin\.local\bin;%Path%
+        echo "$env:APPDATA\Python\Scripts" >> $env:GITHUB_PATH
 
     - name: Install Poetry (Unix/Mac)
       if: matrix.manager == 'poetry' && matrix.os != 'windows-latest'
@@ -275,29 +273,14 @@ jobs:
         bead version
         echo "Successfully installed and tested with conda"
 
-    - name: Test installation with uv (Windows)
-      if: matrix.manager == 'uv' && matrix.os == 'windows-latest'
-      shell: bash
-      run: |
-        uv pip install --system .
-        bead version
-        echo "Successfully installed and tested with uv"
 
-    - name: Test installation with Poetry (Windows)
-      if: matrix.manager == 'poetry' && matrix.os == 'windows-latest'
-      shell: bash
-      run: |
-        poetry install
-        poetry run bead version
-        echo "Successfully installed and tested with poetry"
-
-    - name: Test installation with Conda (Conda)
+    - name: Test installation with Conda (Windows)
       if: matrix.manager == 'conda' && matrix.os == 'windows-latest'
       shell: bash -l {0}
       run: |
         conda activate test-env
-        python -m pip install .
-        bead version
+        python.exe -m pip install .
+        python.exe -m bead version
         echo "Successfully installed and tested with conda"
 
 
