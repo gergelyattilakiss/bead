@@ -4,6 +4,7 @@ import subprocess
 import sys
 import textwrap
 import traceback
+import importlib.metadata
 
 from collections.abc import Sequence
 
@@ -27,23 +28,33 @@ class _git:
     def __init__(self):
         try:
             from . import git_info
-        except ImportError:
-            self.repo = output_of('git config --get remote.origin.url')
-            self.branch = output_of('git branch --show-current')
-            self.date = output_of("git show HEAD --pretty=tformat:'%cI' --no-patch")
-            self.commit = output_of("git show HEAD --pretty=tformat:'%H' --no-patch")
-            self.tag = output_of('git describe --tags')
-            modified_files = [
-                line for line in output_of('git status --porcelain=1').splitlines()
-                if not line.startswith('??') and ' bead_cli/git_info.py' not in line]
-            self.dirty = modified_files != []
-        else:
             self.repo = git_info.GIT_REPO
             self.branch = git_info.GIT_BRANCH
             self.date = git_info.GIT_DATE
             self.commit = git_info.GIT_HASH
             self.tag = git_info.TAG_VERSION
             self.dirty = git_info.DIRTY
+        except ImportError:
+            # No git_info means this is likely an installed package, not a dev build
+            # Only try git commands if we're actually in a git repo
+            try:
+                self.repo = output_of('git config --get remote.origin.url')
+                self.branch = output_of('git branch --show-current')
+                self.date = output_of("git show HEAD --pretty=tformat:'%cI' --no-patch")
+                self.commit = output_of("git show HEAD --pretty=tformat:'%H' --no-patch")
+                self.tag = output_of('git describe --tags')
+                modified_files = [
+                    line for line in output_of('git status --porcelain=1').splitlines()
+                    if not line.startswith('??') and ' bead_cli/git_info.py' not in line]
+                self.dirty = modified_files != []
+            except:
+                # Not in a git repo or git not available - this is a normal install
+                self.repo = ''
+                self.branch = ''
+                self.date = ''
+                self.commit = ''
+                self.tag = ''
+                self.dirty = False  # Installed packages are never "dirty"
 
         self.version_info = textwrap.dedent(
             '''
@@ -71,7 +82,16 @@ class CmdVersion(Command):
     '''
 
     def run(self, args):
-        print(git.version_info)
+        try:
+            version = importlib.metadata.version('bead')
+            print(f'bead version {version}')
+        except importlib.metadata.PackageNotFoundError:
+            # Development mode - show git info
+            print('bead development version')
+            print(git.version_info)
+        
+        # Always show Python version
+        print(f'\nPython {sys.version}')
 
 
 def make_argument_parser(defaults):
@@ -123,14 +143,13 @@ def run(config_dir: str, argv: Sequence[str]):
 FAILURE_TEMPLATE = """\
 {exception}
 
-If you are using the latest version, and have not reported this error yet
-please report this problem by copy-pasting the content of file {error_report}
-at {repo}/issues/new
-and/or attaching the file to an email to {dev}@gmail.com.
+An unexpected error occurred. Please report this issue at:
+{repo}/issues/new
 
-Please make sure you copy-paste from the file {error_report}
-and not from the console, as the shown exception text was shortened
-for your convenience, thus it is not really helpful in fixing the bug.
+Include the full error report from: {error_report}
+
+Note: The console output above has been shortened. 
+Please use the full error report file when creating the issue.
 """
 
 
@@ -158,12 +177,26 @@ def main(run=run):
             f.write(f'{git.version_info}\n')
             if git.dirty:
                 f.write('WARNING: TEST BUILD, UNKNOWN, UNCOMMITTED CHANGES !!!\n')
+        # Try to get repository URL from package metadata
+        try:
+            metadata = importlib.metadata.metadata('bead')
+            repo_url = metadata.get('Home-page', 'https://github.com/codedthinking/bead')
+            if not repo_url:
+                # Try project urls
+                for key in ['Repository', 'Homepage']:
+                    repo_url = metadata.get(f'Project-URL: {key}', '')
+                    if repo_url:
+                        break
+                if not repo_url:
+                    repo_url = 'https://github.com/codedthinking/bead'
+        except:
+            repo_url = 'https://github.com/codedthinking/bead'
+        
         print(
             FAILURE_TEMPLATE.format(
                 exception=short_exception,
                 error_report=error_report,
-                repo='https://github.com/e3krisztian/bead',
-                dev='e3krisztian',
+                repo=repo_url,
             ),
             file=sys.stderr
         )

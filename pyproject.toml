@@ -1,16 +1,11 @@
 [project]
 name = "bead"
-version = "0.8.1"
+version = "0.8.2"
 description = "Linked frozen computations"
 authors = [{name = "Krisztián Fekete"}]
 license = {text = "The Unlicense"}
 requires-python = ">=3.10"
-packages = [
-    { include = "bead" },
-    { include = "bead_cli" },
-    { include = "tracelog.py" },
-    { include = "tests" },
-]
+
 dependencies = [
     "appdirs",
     "argcomplete>=3.6.2",
@@ -18,6 +13,12 @@ dependencies = [
     "cached-property",
     "pip>=25.1.1",
 ]
+
+[project.urls]
+Homepage = "https://bead.zip"
+Repository = "https://github.com/codedthinking/bead"
+"Bug Tracker" = "https://github.com/codedthinking/bead/issues"
+Documentation = "https://bead.zip"
 
 [project.scripts]
 bead = 'bead_cli.main:main'
@@ -38,5 +39,12 @@ reportUnknownParameterType = false
 reportUnknownVariableType = false
 
 [build-system]
-requires = ["flit_core"]
-build-backend = "flit_core.buildapi"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["bead", "bead.tech", "bead_cli", "bead_cli.web", "tests", "tests.web"]
+py-modules = ["tracelog"]
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md"]

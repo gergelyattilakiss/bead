@@ -1,7 +1,3 @@
-Health:
-Travis [![Build Status](https://travis-ci.org/e3krisztian/bead.svg?branch=master)](https://travis-ci.org/e3krisztian/bead)
-AppVeyor [![Build Status](https://ci.appveyor.com/api/projects/status/github/e3krisztian/bead?branch=master&svg=true)](https://ci.appveyor.com/project/e3krisztian/bead)
-
     B-E-+
      \ \ \
       +-A-D
@@ -51,14 +47,53 @@ are nor describing the current situations nor are they showing the future.
 FIXME: clean up documentation.
 
 
-## Install instructions
+## Installation
+
+### Using pipx (recommended)
+
+The easiest way to install `bead` is using [pipx](https://pypa.github.io/pipx/), which installs Python applications in isolated environments:
+
+#### From GitHub (latest development version)
+```bash
+pipx install git+https://github.com/codedthinking/bead.git
+```
+
+#### From a specific branch or tag
+```bash
+# Install from a branch
+pipx install git+https://github.com/codedthinking/bead.git@branch-name
+
+# Install from a tag
+pipx install git+https://github.com/codedthinking/bead.git@v0.8.1
+```
+
+#### Upgrade to latest version
+```bash
+pipx upgrade bead
+```
+
+#### From PyPI (coming soon)
+Once published to PyPI, you'll be able to install with:
+```bash
+pipx install bead
+```
+
+### Using pip
+
+You can also install using pip, though pipx is recommended for better isolation:
+
+```bash
+pip install git+https://github.com/codedthinking/bead.git
+```
+
+### Building from source
 
 Ensure you have Python 3.10+ installed.
 
-Run `make executables` to create the `bead` tool:
+Run `make executables` to create standalone executables:
 
 ```
-$ python build.py
+$ make executables
 ```
 
 This generates one-file executables for unix, mac, and windows in the `executables` directory:
@@ -86,9 +121,7 @@ Thank you for your interest!
 
 ## TODOs
 
-Updated by script ([./ci](https://github.com/e3krisztian/bead/blob/wip/ci)), text in this section and afterwards will be overwritten
-
-- [FIXME: this test helper uses private to box implementation information](https://github.com/e3krisztian/bead/blob/wip/bead_cli/test_feature_update_by_name.py#L102)
-- [TODO: log/report problem](https://github.com/e3krisztian/bead/blob/wip/bead/box.py#L160)
-- [XXX: (usability) save - support saving directly to a directory outside of workspace](https://github.com/e3krisztian/bead/blob/wip/bead_cli/workspace.py#L87)
-- [XXX: try to load smaller inputs?](https://github.com/e3krisztian/bead/blob/wip/bead_cli/workspace.py#L163)
+- FIXME: test helper uses private to box implementation information (test_feature_update_by_name.py)
+- TODO: log/report problem (box.py)
+- XXX: (usability) save - support saving directly to a directory outside of workspace
+- XXX: try to load smaller inputs?
