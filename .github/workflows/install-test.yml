@@ -208,7 +208,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: test-env
-        auto-activate-base: true
+        auto-activate: false
 
     - name: Install UV (Windows)
       if: matrix.manager == 'uv' && matrix.os == 'windows-latest'
@@ -279,8 +279,6 @@ jobs:
         echo "Successfully installed and tested with conda"
 
 
-
-
     - name: Test basic functionality
       shell: bash
       run: |
@@ -295,18 +293,18 @@ jobs:
             poetry run bead status
             ;;
           "conda")
-            eval "$(conda shell.bash hook)"
-            conda activate test-env
             if [[ "$RUNNER_OS" == "Windows" ]]; then
-              python.exe -m bead new test-bead
+              conda.exe activate test-env 
+              bead new test-bead
               cd test-bead
-              python.exe -m bead status
+              bead status
             else
+              conda activate test-env 
               bead new test-bead
               cd test-bead
               bead status
             fi
-            ;;
+                        ;;
           *)
             bead new test-bead
             cd test-bead
