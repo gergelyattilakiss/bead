@@ -302,35 +302,34 @@ jobs:
         
         echo "Successfully created workspace and checked status with ${{ matrix.manager }}"
 
-    - name: Test basic functionality (Unix/Mac)
+    - name: Test basic functionality (Windows)
       if: matrix.os == 'windows-latest'
       shell: powershell
       run: |
         # Create a test workspace
-        mkdir test-workspace-${{ matrix.manager }}
-        cd test-workspace-${{ matrix.manager }}
+        New-Item -ItemType Directory -Name "test-workspace-${{ matrix.manager }}"
+        Set-Location "test-workspace-${{ matrix.manager }}"
         
-        case "${{ matrix.manager }}" in
-          "poetry")
+        switch ("${{ matrix.manager }}") {
+          "poetry" {
             poetry run bead new test-bead
-            cd test-bead
+            Set-Location test-bead
             poetry run bead status
-            ;;
-          "conda")
-            eval "$(conda shell.bash hook)"
+          }
+          "conda" {
             conda activate test-env
             bead new test-bead
-            cd test-bead
+            Set-Location test-bead
             bead status
-            ;;
-          *)
+          }
+          default {
             bead new test-bead
-            cd test-bead
+            Set-Location test-bead
             bead status
-            ;;
-        esac
+          }
+        }
         
-        echo "Successfully created workspace and checked status with ${{ matrix.manager }}"
+        Write-Host "Successfully created workspace and checked status with ${{ matrix.manager }}"
 
 
     - name: Clean up test directories
