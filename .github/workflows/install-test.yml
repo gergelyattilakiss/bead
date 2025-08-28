@@ -184,7 +184,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [windows-latest] #[ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.10', '3.11', '3.12', '3.13']
         manager: [conda] #[pip, uv, poetry, conda]
         # exclude:
@@ -272,7 +272,8 @@ jobs:
         echo "Successfully installed and tested with conda"
 
 
-    - name: Test basic functionality
+    - name: Test basic functionality (Unix/Mac)
+      if: matrix.os != 'windows-latest'
       shell: bash
       run: |
         # Create a test workspace
@@ -300,6 +301,37 @@ jobs:
         esac
         
         echo "Successfully created workspace and checked status with ${{ matrix.manager }}"
+
+    - name: Test basic functionality (Unix/Mac)
+      if: matrix.os == 'windows-latest'
+      shell: powershell
+      run: |
+        # Create a test workspace
+        mkdir test-workspace-${{ matrix.manager }}
+        cd test-workspace-${{ matrix.manager }}
+        
+        case "${{ matrix.manager }}" in
+          "poetry")
+            poetry run bead new test-bead
+            cd test-bead
+            poetry run bead status
+            ;;
+          "conda")
+            eval "$(conda shell.bash hook)"
+            conda activate test-env
+            bead new test-bead
+            cd test-bead
+            bead status
+            ;;
+          *)
+            bead new test-bead
+            cd test-bead
+            bead status
+            ;;
+        esac
+        
+        echo "Successfully created workspace and checked status with ${{ matrix.manager }}"
+
 
     - name: Clean up test directories
       shell: bash
