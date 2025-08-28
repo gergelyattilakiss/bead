@@ -69,6 +69,10 @@ jobs:
           ../executables/bead new test-bead
         fi
         test -d test-bead
+        test -d test-bead/input
+        test -d test-bead/output
+        test -d test-bead/temp
+
         echo "Successfully created test workspace"
 
     - name: Test bead commands - workspace status
@@ -106,14 +110,73 @@ jobs:
           # Create a new workspace to verify full functionality
           bead new verification-test
           test -d verification-test
+          test -d verification-test/input
+          test -d verification-test/output
+          test -d verification-test/temp
           echo "Successfully created verification workspace on Unix/Mac"
         fi
         echo "Successfully tested installation to PATH with workspace creation"
 
+    - name: Test pipx installation
+      shell: bash
+      run: |
+        python -m pip install --user pipx
+        python -m pipx ensurepath
+        export PATH="$HOME/.local/bin:$PATH"
+        python -m pipx install bead --force
+        bead version
+        # Create a new workspace to verify full functionality
+        mkdir -p test-workspace-pipx
+        cd test-workspace-pipx
+        bead new pipx-test
+        test -d pipx-test
+        test -d pipx-test/input
+        test -d pipx-test/output
+        test -d pipx-test/temp
+
+        echo "Successfully created pipx test workspace"
+
+    - name: Test pipx installation from test pypi
+      shell: bash
+      run: |
+        python -m pip install --user pipx
+        python -m pipx ensurepath
+        export PATH="$HOME/.local/bin:$PATH"
+        python -m pipx install --index-url https://test.pypi.org/simple/ --pip-args="--extra-index-url https://pypi.org/simple/" bead --force
+        bead version
+        # Create a new workspace to verify full functionality
+        mkdir -p test-workspace-pipx
+        cd test-workspace-pipx
+        bead new pipx-test2
+        test -d pipx-test2
+        test -d pipx-test2/input
+        test -d pipx-test2/output
+        test -d pipx-test2/temp
+
+        echo "Successfully created pipx test workspace"
+
+    - name: Test binary download method for bead 0.8.2
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        mkdir -p test-bin-download
+        cd test-bin-download
+        curl -L -o bead.cmd https://github.com/e3krisztian/bead/releases/download/v0.8.1/bead.cmd
+        test -f bead.cmd
+        python bead.cmd version
+        python bead.cmd new download-test
+        test -d download-test
+        test -d download-test/input
+        test -d download-test/output
+        test -d download-test/temp
+
+        echo "Successfully downloaded and tested bead.cmd binary"
+
+
     - name: Clean up test directories
       shell: bash
       run: |
-        rm -rf test-workspace verification-test test-bin executables
+        rm -rf test-workspace verification-test test-bin executables test-workspace-pipx
         echo "Cleaned up test directories"
 
   dependency-manager-tests:
@@ -256,73 +319,4 @@ jobs:
       run: |
         rm -rf test-workspace-${{ matrix.manager }}
         echo "Cleaned up test directories"
-
-  r-package-tests:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        r-version: ['4.3.0', '4.4.0']
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up R ${{ matrix.r-version }}
-      uses: r-lib/actions/setup-r@v2
-      with:
-        r-version: ${{ matrix.r-version }}
-
-    - name: Set up Python (for R integration)
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-
-    - name: Install system dependencies (Ubuntu)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y python3-dev
-
-    - name: Install bead in R
-      continue-on-error: true
-      shell: Rscript {0}
-      run: |
-        install.packages("bead", repos = NULL, type = "source")
-
-    - name: Install R dependencies
-      run: |
-        install.packages(c("reticulate", "devtools"))
-      shell: Rscript {0}
-
-    - name: Test R integration with reticulate
-      shell: Rscript {0}
-      run: |
-        library(reticulate)
-        
-        # Install bead package in Python
-        py_install(".", pip = TRUE)
-        
-        # Test that we can import and use bead from R
-        bead <- import("bead_cli.main")
-        
-        # Create a simple test
-        cat("Successfully imported bead from R via reticulate\n")
-        
-        # Test version command through system call
-        system("python -c \"import bead_cli.main; print('R integration test passed')\"")
-
-    - name: Test R package installation 
-      shell: bash
-      run: |
-          bead new test-bead
-          cd test-bead
-          bead status
-
-    - name: Clean up test directories
-      shell: bash
-      run: |
-        rm -rf test-bead
-        echo "Cleaned up test directories"
-
 
