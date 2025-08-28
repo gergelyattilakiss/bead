@@ -262,7 +262,7 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate test-env
-        pip install .
+        conda install .
         bead version
         echo "Successfully installed and tested with conda"
 
