@@ -123,7 +123,7 @@ jobs:
         python -m pip install --user pipx
         python -m pipx ensurepath
         export PATH="$HOME/.local/bin:$PATH"
-        python -m pipx install bead --force
+        pipx install bead --force
         bead version
         # Create a new workspace to verify full functionality
         mkdir -p test-workspace-pipx
@@ -142,7 +142,7 @@ jobs:
         python -m pip install --user pipx
         python -m pipx ensurepath
         export PATH="$HOME/.local/bin:$PATH"
-        python -m pipx install --index-url https://test.pypi.org/simple/ --pip-args="--extra-index-url https://pypi.org/simple/" bead --force
+        pipx install --index-url https://test.pypi.org/simple/ --pip-args="--extra-index-url https://pypi.org/simple/" bead --force
         bead version
         # Create a new workspace to verify full functionality
         mkdir -p test-workspace-pipx
@@ -210,28 +210,33 @@ jobs:
         activate-environment: test-env
         auto-activate-base: false
 
-    - name: Install UV
-      if: matrix.manager == 'uv'
+    - name: Install UV (Windows)
+      if: matrix.manager == 'uv' && matrix.os == 'windows-latest'
+      shell: powershell
+      run: |
+        Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression
+        echo "$env:USERPROFILE\.local\bin" >> $env:GITHUB_PATH
+
+    - name: Install UV (Unix/Mac)
+      if: matrix.manager == 'uv' && matrix.os != 'windows-latest'
       shell: bash
       run: |
-        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-          curl -LsSf https://astral.sh/uv/install.ps1 | powershell -c -
-        else
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-        fi
+        curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Install Poetry
-      if: matrix.manager == 'poetry'
+    - name: Install Poetry (Windows)
+      if: matrix.manager == 'poetry' && matrix.os == 'windows-latest'
+      shell: powershell
+      run: |
+        (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+        echo "$env:USERPROFILE\.local\bin" >> $env:GITHUB_PATH
+
+    - name: Install Poetry (Unix/Mac)
+      if: matrix.manager == 'poetry' && matrix.os != 'windows-latest'
       shell: bash
       run: |
-        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-          (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-        else
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-        fi
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: test package manager named installation
       continue-on-error: true
